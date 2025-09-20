@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: external-data-consumer
+  kafka:
+    bootstrap-servers: localhost:9092
+
+server:
+  port: 8080
+
+app:
+  kafka:
+    topic:
+      output: external-itp-data
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus,info
+
+logging:
+  level:
+    ru.bluewater.externaldataconsumer: INFO
+    org.springframework.kafka: INFO
