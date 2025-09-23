@@ -20,6 +20,8 @@
     <modules>
         <module>vodokanal-data-service</module>
         <module>external-data-consumer</module>
+        <module>itp-data-processing</module>
+        <module>integration</module>
     </modules>
 
     <packaging>pom</packaging>

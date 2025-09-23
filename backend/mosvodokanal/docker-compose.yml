@@ -1,0 +1,14 @@
+services:
+  nominatim:
+    image: mediagis/nominatim:5.1
+    container_name: nominatim-moscow
+    ports:
+      - "8082:8080"
+    environment:
+      - PBF_URL=file:///local_pbf/Moscow.osm.pbf
+      - NOMINATIM_THREADS=4
+      - SHARED_MEM=4
+    volumes:
+      - ./:/local_pbf:ro
+    shm_size: '4g'
+    restart: unless-stopped
