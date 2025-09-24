@@ -39,3 +39,6 @@ logging:
     org.hibernate.SQL: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+springdoc:
+  enable-data-rest: false
