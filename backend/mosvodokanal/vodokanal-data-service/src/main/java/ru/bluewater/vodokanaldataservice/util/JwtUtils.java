@@ -12,10 +12,6 @@ public class JwtUtils {
         return extractClaim(token, claims -> claims.get("preferred_username", String.class));
     }
 
-    public String extractFullName(String token) {
-        return extractClaim(token, claims -> claims.get("fullname", String.class));
-    }
-
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);

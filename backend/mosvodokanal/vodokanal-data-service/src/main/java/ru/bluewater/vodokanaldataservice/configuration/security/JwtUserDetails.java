@@ -12,9 +12,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class JwtUserDetails implements UserDetails {
-
     private String username;
-    private String fullName;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
