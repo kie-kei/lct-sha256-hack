@@ -1,10 +1,36 @@
 spring:
   application:
     name: itp-data-processing
+  threads:
+    virtual:
+      enabled: true
+  task:
+    execution:
+      pool:
+        virtual-threads: true
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
-      group-id: itp-data-consumer-group
+      group-id: itp-data-processing-group
+      properties:
+        session.timeout.ms: 30000
+        heartbeat.interval.ms: 10000
+        connections.max.idle.ms: 540000
+        num.consumer.fetchers: 20
+      listener:
+        concurrency: 20
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus,info,kafka
+
+logging:
+  level:
+    root: info
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
 
 app:
   kafka:

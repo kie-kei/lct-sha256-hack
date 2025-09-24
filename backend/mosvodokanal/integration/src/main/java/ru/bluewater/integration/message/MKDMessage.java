@@ -1,4 +1,4 @@
-package ru.bluewater.integration.model;
+package ru.bluewater.integration.message;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MKD {
+public class MKDMessage {
     private String address; // Адрес
     private String fias; // ФИАС
     private String unom; // УНОМ
