@@ -14,7 +14,7 @@ spring:
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
-      group-id: itp-data-consumer-group
+      group-id: vodokanal-data-consumer-group
       properties:
         session.timeout.ms: 30000
         heartbeat.interval.ms: 10000
@@ -58,3 +58,8 @@ logging:
 
 springdoc:
   enable-data-rest: false
+
+app:
+  kafka:
+    topic:
+      input: processed-itp-data

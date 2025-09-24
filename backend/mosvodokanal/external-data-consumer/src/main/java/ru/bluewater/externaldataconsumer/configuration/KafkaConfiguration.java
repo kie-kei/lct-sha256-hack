@@ -1,4 +1,4 @@
-package ru.bluewater.externaldataconsumer.config;
+package ru.bluewater.externaldataconsumer.configuration;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-public class KafkaConfig {
+public class KafkaConfiguration {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
@@ -24,13 +24,13 @@ public class KafkaConfig {
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
 
-        props.put(ProducerConfig.ACKS_CONFIG, "0"); // Без подтверждения доставки
-        props.put(ProducerConfig.RETRIES_CONFIG, 0); // Без повторов
-        props.put(ProducerConfig.BATCH_SIZE_CONFIG, 65536); // Увеличиваем размер батча (64KB)
-        props.put(ProducerConfig.LINGER_MS_CONFIG, 5); // Ждем 5мс для сбора батча
-        props.put(ProducerConfig.BUFFER_MEMORY_CONFIG, 67108864); // 64MB буфер
-        props.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "lz4"); // Быстрое сжатие
-        props.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 5); // Параллельные запросы
+        props.put(ProducerConfig.ACKS_CONFIG, "0");
+        props.put(ProducerConfig.RETRIES_CONFIG, 0);
+        props.put(ProducerConfig.BATCH_SIZE_CONFIG, 65536); // 64KB
+        props.put(ProducerConfig.LINGER_MS_CONFIG, 5);
+        props.put(ProducerConfig.BUFFER_MEMORY_CONFIG, 67108864); // 64MB
+        props.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "lz4");
+        props.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 5);
 
         return new DefaultKafkaProducerFactory<>(props);
     }
