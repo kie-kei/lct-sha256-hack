@@ -1,4 +1,4 @@
-package ru.bluewater.integration.model;
+package ru.bluewater.integration.message;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ODPUGVSDevice {
+public class ODPUGVSDeviceMessage {
     private UUID heatMeterIdentifier; // Идентификатор тепловычислителя
     private UUID firstChannelFlowmeterIdentifier; // Идентификатор расходомера первого канала
     private UUID secondChannelFlowmeterIdentifier; // Идентификатор расходомера второго канала

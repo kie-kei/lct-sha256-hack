@@ -1,4 +1,4 @@
-package ru.bluewater.integration.model;
+package ru.bluewater.integration.message;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WaterMeterXVSITP {
+public class WaterMeterXVSITPMessage {
     private UUID identifier; // Идентификатор
     private Integer flowValue; // Значение расхода
 }

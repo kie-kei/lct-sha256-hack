@@ -4,14 +4,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import ru.bluewater.integration.model.ITPData;
+import ru.bluewater.integration.message.ITPDataMessage;
 import ru.bluewater.itpdataprocessing.dto.NominatimResponse;
 import ru.bluewater.itpdataprocessing.exception.CoordinatesNotFoundException;
 import ru.bluewater.itpdataprocessing.exception.InvalidAddressException;
 import ru.bluewater.itpdataprocessing.exception.NominatimServiceUnavailableException;
 import ru.bluewater.itpdataprocessing.export.ProcessedITPDataExporter;
-
-import java.util.Date;
 
 @Service
 public class ITPDataService {
@@ -27,8 +25,8 @@ public class ITPDataService {
         this.processedITPDataExporter = processedITPDataExporter;
     }
 
-    public void processItpData(String itpId, ITPData itpData) throws InvalidAddressException, NominatimServiceUnavailableException {
-        String address = itpData.getMkd().getAddress();
+    public void processItpData(String itpId, ITPDataMessage itpDataMessage) throws InvalidAddressException, NominatimServiceUnavailableException {
+        String address = itpDataMessage.getMkdMessage().getAddress();
 
         if (address == null || address.trim().isEmpty()) {
             throw new InvalidAddressException();
@@ -43,10 +41,10 @@ public class ITPDataService {
                 throw new CoordinatesNotFoundException();
             }
 
-            itpData.setLongitude(response[0].getLongitude());
-            itpData.setLatitude(response[0].getLatitude());
+            itpDataMessage.setLongitude(response[0].getLongitude());
+            itpDataMessage.setLatitude(response[0].getLatitude());
 
-            processedITPDataExporter.exportITPData(itpId, itpData);
+            processedITPDataExporter.exportITPData(itpId, itpDataMessage);
         } catch (RestClientException e) {
             throw new NominatimServiceUnavailableException();
         } catch (Exception e) {
