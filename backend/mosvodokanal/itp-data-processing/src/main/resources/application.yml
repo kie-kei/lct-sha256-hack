@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: itp-data-processing
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: itp-data-consumer-group
+
+app:
+  kafka:
+    topic:
+      input: external-itp-data
+      output: processed-itp-data
+
+nominatim:
+  url: http://localhost:8082
