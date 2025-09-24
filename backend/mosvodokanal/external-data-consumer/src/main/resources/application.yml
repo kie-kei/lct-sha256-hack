@@ -7,11 +7,6 @@ spring:
 server:
   port: 8080
 
-app:
-  kafka:
-    topic:
-      output: external-itp-data
-
 management:
   endpoints:
     web:
@@ -20,5 +15,9 @@ management:
 
 logging:
   level:
-    ru.bluewater.externaldataconsumer: INFO
-    org.springframework.kafka: INFO
+    root: info
+
+app:
+  kafka:
+    topic:
+      output: external-itp-data

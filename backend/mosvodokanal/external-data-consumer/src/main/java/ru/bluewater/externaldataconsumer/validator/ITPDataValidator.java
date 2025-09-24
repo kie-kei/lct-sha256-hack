@@ -2,7 +2,7 @@ package ru.bluewater.externaldataconsumer.validator;
 
 import org.springframework.stereotype.Component;
 import ru.bluewater.externaldataconsumer.api.exception.ITPDataException;
-import ru.bluewater.externaldataconsumer.model.ITPData;
+import ru.bluewater.integration.model.ITPData;
 
 @Component
 public class ITPDataValidator {

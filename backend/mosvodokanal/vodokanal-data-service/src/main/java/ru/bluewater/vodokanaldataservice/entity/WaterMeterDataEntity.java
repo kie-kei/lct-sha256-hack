@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -22,6 +23,11 @@ public class WaterMeterDataEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
     private UUID id;
+    @ManyToOne
+    @JoinColumn(name = "itp_id", nullable = false)
+    private ITPEntity itp;
+    @Column(name = "measurement_timestamp", nullable = false)
+    private Date measurementTimestamp;
 
     // ГВС данные
     @Column(name = "heat_meter_identifier")
@@ -38,15 +44,11 @@ public class WaterMeterDataEntity {
     private UUID waterMeterIdentifier;
     @Column(name = "hvs_flow_value")
     private Integer hvsFlowValue;
-    @Column(name = "measurement_timestamp", nullable = false)
-    private LocalDateTime measurementTimestamp;
-    @ManyToOne
-    @JoinColumn(name = "itp_id", nullable = false)
-    private ITPEntity itp;
 
-    // Задается на сервисе обогащения потока
+    @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+    @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 }

@@ -7,8 +7,10 @@ import ru.bluewater.externaldataconsumer.api.dto.request.ITPDataRequest;
 import ru.bluewater.externaldataconsumer.api.exception.ITPDataException;
 import ru.bluewater.externaldataconsumer.export.ITPDataExporter;
 import ru.bluewater.externaldataconsumer.mapper.ITPDataMapper;
-import ru.bluewater.externaldataconsumer.model.*;
 import ru.bluewater.externaldataconsumer.validator.ITPDataValidator;
+import ru.bluewater.integration.model.ITPData;
+
+import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +28,8 @@ public class ITPDataService {
 
             itpDataValidator.validate(itpData);
 
+            enrichITPData(itpData);
+
             itpDataExporter.exportITPData(itpData.getITPId().toString(), itpData);
 
             log.debug("Successfully processed ITP data for ITP ID: {}", itpData.getITPId());
@@ -35,5 +39,9 @@ public class ITPDataService {
             log.error("Error processing ITP data", e);
             throw new ITPDataException("Failed to process ITP data: " + e.getMessage());
         }
+    }
+
+    private void enrichITPData(ITPData data) {
+        data.setTimestamp(new Date());
     }
 }

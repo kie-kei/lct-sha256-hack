@@ -3,7 +3,7 @@ package ru.bluewater.externaldataconsumer.mapper;
 import org.mapstruct.Mapper;
 import ru.bluewater.externaldataconsumer.api.dto.request.ITPDataRequest;
 import ru.bluewater.externaldataconsumer.dto.*;
-import ru.bluewater.externaldataconsumer.model.*;
+import ru.bluewater.integration.model.*;
 
 import java.util.List;
 

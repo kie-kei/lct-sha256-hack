@@ -31,40 +31,40 @@ public class MKDService {
     private final MKDMapper mkdMapper;
 
     public Page<MKDResponse> findAll(Pageable pageable) {
-        log.info("Getting all MKDs with pagination: {}", pageable);
+        log.debug("Getting all MKDs with pagination: {}", pageable);
         return mkdRepository.findAll(pageable)
                 .map(mkdMapper::toResponse);
     }
 
     public MKDResponse findById(UUID id) {
-        log.info("Getting MKD by id: {}", id);
+        log.debug("Getting MKD by id: {}", id);
         MKDEntity entity = mkdRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("MKD not found with id: " + id));
         return mkdMapper.toResponse(entity);
     }
 
     public MKDResponse findByItpId(UUID itpId) {
-        log.info("Getting MKD by ITP id: {}", itpId);
+        log.debug("Getting MKD by ITP id: {}", itpId);
         MKDEntity entity = mkdRepository.findByItpId(itpId)
                 .orElseThrow(() -> new ResourceNotFoundException("MKD not found for ITP id: " + itpId));
         return mkdMapper.toResponse(entity);
     }
 
     public Page<MKDResponse> findByAddressContaining(String address, Pageable pageable) {
-        log.info("Searching MKDs by address containing: {}", address);
+        log.debug("Searching MKDs by address containing: {}", address);
         return mkdRepository.findByAddressContainingIgnoreCase(address, pageable)
                 .map(mkdMapper::toResponse);
     }
 
     public List<MKDResponse> findByLocationNear(BigDecimal latitude, BigDecimal longitude, BigDecimal radius) {
-        log.info("Finding MKDs near location: {}, {} with radius: {}", latitude, longitude, radius);
+        log.debug("Finding MKDs near location: {}, {} with radius: {}", latitude, longitude, radius);
         List<MKDEntity> entities = mkdRepository.findByLocationNear(latitude, longitude, radius);
         return mkdMapper.toResponseList(entities);
     }
 
     @Transactional
     public MKDResponse create(UUID itpId, MKDCreateRequest request) {
-        log.info("Creating MKD for ITP id: {}", itpId);
+        log.debug("Creating MKD for ITP id: {}", itpId);
 
         ITPEntity itp = itpRepository.findById(itpId)
                 .orElseThrow(() -> new ResourceNotFoundException("ITP not found with id: " + itpId));
@@ -81,14 +81,14 @@ public class MKDService {
         entity.setItp(itp);
 
         entity = mkdRepository.save(entity);
-        log.info("Created MKD with id: {}", entity.getId());
+        log.debug("Created MKD with id: {}", entity.getId());
 
         return mkdMapper.toResponse(entity);
     }
 
     @Transactional
     public MKDResponse update(UUID id, MKDUpdateRequest request) {
-        log.info("Updating MKD with id: {}", id);
+        log.debug("Updating MKD with id: {}", id);
 
         MKDEntity entity = mkdRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("MKD not found with id: " + id));
@@ -110,19 +110,19 @@ public class MKDService {
         mkdMapper.updateEntity(entity, request);
         entity = mkdRepository.save(entity);
 
-        log.info("Updated MKD with id: {}", id);
+        log.debug("Updated MKD with id: {}", id);
         return mkdMapper.toResponse(entity);
     }
 
     @Transactional
     public void delete(UUID id) {
-        log.info("Deleting MKD with id: {}", id);
+        log.debug("Deleting MKD with id: {}", id);
 
         if (!mkdRepository.existsById(id)) {
             throw new ResourceNotFoundException("MKD not found with id: " + id);
         }
 
         mkdRepository.deleteById(id);
-        log.info("Deleted MKD with id: {}", id);
+        log.debug("Deleted MKD with id: {}", id);
     }
 }

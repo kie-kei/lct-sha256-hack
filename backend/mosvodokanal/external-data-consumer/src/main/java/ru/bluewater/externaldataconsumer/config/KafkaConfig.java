@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.*;
 import org.springframework.kafka.support.serializer.JsonSerializer;
-import ru.bluewater.externaldataconsumer.model.ITPData;
+import ru.bluewater.integration.model.ITPData;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +23,14 @@ public class KafkaConfig {
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+
+        props.put(ProducerConfig.ACKS_CONFIG, "0"); // Без подтверждения доставки
+        props.put(ProducerConfig.RETRIES_CONFIG, 0); // Без повторов
+        props.put(ProducerConfig.BATCH_SIZE_CONFIG, 65536); // Увеличиваем размер батча (64KB)
+        props.put(ProducerConfig.LINGER_MS_CONFIG, 5); // Ждем 5мс для сбора батча
+        props.put(ProducerConfig.BUFFER_MEMORY_CONFIG, 67108864); // 64MB буфер
+        props.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "lz4"); // Быстрое сжатие
+        props.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 5); // Параллельные запросы
 
         return new DefaultKafkaProducerFactory<>(props);
     }

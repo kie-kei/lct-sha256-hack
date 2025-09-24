@@ -28,23 +28,17 @@ public class MKDController {
     @GetMapping
     public ResponseEntity<Page<MKDResponse>> getAllMKDs(
             @PageableDefault(size = 20) Pageable pageable) {
-        log.info("GET /api/v1/mkd - Getting all MKDs");
-        Page<MKDResponse> mkds = mkdService.findAll(pageable);
-        return ResponseEntity.ok(mkds);
+        return ResponseEntity.ok(mkdService.findAll(pageable));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<MKDResponse> getMKDById(@PathVariable UUID id) {
-        log.info("GET /api/v1/mkd/{} - Getting MKD", id);
-        MKDResponse mkd = mkdService.findById(id);
-        return ResponseEntity.ok(mkd);
+        return ResponseEntity.ok(mkdService.findById(id));
     }
 
     @GetMapping("/itp/{itpId}")
     public ResponseEntity<MKDResponse> getMKDByItpId(@PathVariable UUID itpId) {
-        log.info("GET /api/v1/mkd/itp/{} - Getting MKD by ITP id", itpId);
-        MKDResponse mkd = mkdService.findByItpId(itpId);
-        return ResponseEntity.ok(mkd);
+        return ResponseEntity.ok(mkdService.findByItpId(itpId));
     }
 
     @GetMapping("/search")
@@ -52,8 +46,7 @@ public class MKDController {
             @RequestParam String address,
             @PageableDefault(size = 20) Pageable pageable) {
         log.info("GET /api/v1/mkd/search?address={} - Searching MKDs", address);
-        Page<MKDResponse> mkds = mkdService.findByAddressContaining(address, pageable);
-        return ResponseEntity.ok(mkds);
+        return ResponseEntity.ok(mkdService.findByAddressContaining(address, pageable));
     }
 
     @GetMapping("/nearby")
@@ -61,32 +54,25 @@ public class MKDController {
             @RequestParam BigDecimal latitude,
             @RequestParam BigDecimal longitude,
             @RequestParam(defaultValue = "0.01") BigDecimal radius) {
-        log.info("GET /api/v1/mkd/nearby - Getting MKDs near location");
-        List<MKDResponse> mkds = mkdService.findByLocationNear(latitude, longitude, radius);
-        return ResponseEntity.ok(mkds);
+        return ResponseEntity.ok(mkdService.findByLocationNear(latitude, longitude, radius));
     }
 
     @PostMapping("/itp/{itpId}")
     public ResponseEntity<MKDResponse> createMKD(
             @PathVariable UUID itpId,
             @Valid @RequestBody MKDCreateRequest request) {
-        log.info("POST /api/v1/mkd/itp/{} - Creating MKD for ITP", itpId);
-        MKDResponse createdMKD = mkdService.create(itpId, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdMKD);
+        return ResponseEntity.status(HttpStatus.CREATED).body(mkdService.create(itpId, request));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<MKDResponse> updateMKD(
             @PathVariable UUID id,
             @Valid @RequestBody MKDUpdateRequest request) {
-        log.info("PUT /api/v1/mkd/{} - Updating MKD", id);
-        MKDResponse updatedMKD = mkdService.update(id, request);
-        return ResponseEntity.ok(updatedMKD);
+        return ResponseEntity.ok(mkdService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMKD(@PathVariable UUID id) {
-        log.info("DELETE /api/v1/mkd/{} - Deleting MKD", id);
         mkdService.delete(id);
         return ResponseEntity.noContent().build();
     }

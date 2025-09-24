@@ -29,32 +29,24 @@ public class WaterMeterDataController {
     @GetMapping
     public ResponseEntity<Page<WaterMeterDataResponse>> getAllWaterMeterData(
             @PageableDefault(size = 20) Pageable pageable) {
-        log.info("GET /api/v1/water-meter-data - Getting all water meter data");
-        Page<WaterMeterDataResponse> data = waterMeterDataService.findAll(pageable);
-        return ResponseEntity.ok(data);
+        return ResponseEntity.ok(waterMeterDataService.findAll(pageable));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<WaterMeterDataResponse> getWaterMeterDataById(@PathVariable UUID id) {
-        log.info("GET /api/v1/water-meter-data/{} - Getting water meter data", id);
-        WaterMeterDataResponse data = waterMeterDataService.findById(id);
-        return ResponseEntity.ok(data);
+        return ResponseEntity.ok(waterMeterDataService.findById(id));
     }
 
     @GetMapping("/itp/{itpId}")
     public ResponseEntity<List<WaterMeterDataResponse>> getWaterMeterDataByITP(@PathVariable UUID itpId) {
-        log.info("GET /api/v1/water-meter-data/itp/{} - Getting water meter data for ITP", itpId);
-        List<WaterMeterDataResponse> data = waterMeterDataService.findByItpId(itpId);
-        return ResponseEntity.ok(data);
+        return ResponseEntity.ok(waterMeterDataService.findByItpId(itpId));
     }
 
     @GetMapping("/itp/{itpId}/paged")
     public ResponseEntity<Page<WaterMeterDataResponse>> getWaterMeterDataByITPPaged(
             @PathVariable UUID itpId,
             @PageableDefault(size = 20) Pageable pageable) {
-        log.info("GET /api/v1/water-meter-data/itp/{}/paged - Getting paged water meter data for ITP", itpId);
-        Page<WaterMeterDataResponse> data = waterMeterDataService.findByItpIdPaged(itpId, pageable);
-        return ResponseEntity.ok(data);
+        return ResponseEntity.ok(waterMeterDataService.findByItpIdPaged(itpId, pageable));
     }
 
     @GetMapping("/itp/{itpId}/period")
@@ -62,16 +54,12 @@ public class WaterMeterDataController {
             @PathVariable UUID itpId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
-        log.info("GET /api/v1/water-meter-data/itp/{}/period - Getting water meter data for period", itpId);
-        List<WaterMeterDataResponse> data = waterMeterDataService.findByItpIdAndPeriod(itpId, startDate, endDate);
-        return ResponseEntity.ok(data);
+        return ResponseEntity.ok(waterMeterDataService.findByItpIdAndPeriod(itpId, startDate, endDate));
     }
 
     @GetMapping("/itp/{itpId}/latest")
     public ResponseEntity<List<WaterMeterDataResponse>> getLatestWaterMeterDataByITP(@PathVariable UUID itpId) {
-        log.info("GET /api/v1/water-meter-data/itp/{}/latest - Getting latest water meter data for ITP", itpId);
-        List<WaterMeterDataResponse> data = waterMeterDataService.findLatestByItpId(itpId);
-        return ResponseEntity.ok(data);
+        return ResponseEntity.ok(waterMeterDataService.findLatestByItpId(itpId));
     }
 
     @GetMapping("/itp/{itpId}/average/gvs")
@@ -79,9 +67,7 @@ public class WaterMeterDataController {
             @PathVariable UUID itpId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
-        log.info("GET /api/v1/water-meter-data/itp/{}/average/gvs - Getting average GVS flow", itpId);
-        Double averageFlow = waterMeterDataService.getAverageGvsFlowByItpIdAndPeriod(itpId, startDate, endDate);
-        return ResponseEntity.ok(averageFlow);
+        return ResponseEntity.ok(waterMeterDataService.getAverageGvsFlowByItpIdAndPeriod(itpId, startDate, endDate));
     }
 
     @GetMapping("/itp/{itpId}/average/hvs")
@@ -89,30 +75,23 @@ public class WaterMeterDataController {
             @PathVariable UUID itpId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
-        log.info("GET /api/v1/water-meter-data/itp/{}/average/hvs - Getting average HVS flow", itpId);
-        Double averageFlow = waterMeterDataService.getAverageHvsFlowByItpIdAndPeriod(itpId, startDate, endDate);
-        return ResponseEntity.ok(averageFlow);
+        return ResponseEntity.ok(waterMeterDataService.getAverageHvsFlowByItpIdAndPeriod(itpId, startDate, endDate));
     }
 
     @PostMapping
     public ResponseEntity<WaterMeterDataResponse> createWaterMeterData(@Valid @RequestBody WaterMeterDataCreateRequest request) {
-        log.info("POST /api/v1/water-meter-data - Creating water meter data");
-        WaterMeterDataResponse created = waterMeterDataService.create(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        return ResponseEntity.status(HttpStatus.CREATED).body(waterMeterDataService.create(request));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<WaterMeterDataResponse> updateWaterMeterData(
             @PathVariable UUID id,
             @Valid @RequestBody WaterMeterDataUpdateRequest request) {
-        log.info("PUT /api/v1/water-meter-data/{} - Updating water meter data", id);
-        WaterMeterDataResponse updated = waterMeterDataService.update(id, request);
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(waterMeterDataService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteWaterMeterData(@PathVariable UUID id) {
-        log.info("DELETE /api/v1/water-meter-data/{} - Deleting water meter data", id);
         waterMeterDataService.delete(id);
         return ResponseEntity.noContent().build();
     }

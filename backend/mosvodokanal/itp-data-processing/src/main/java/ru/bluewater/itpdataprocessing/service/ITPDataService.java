@@ -15,7 +15,6 @@ import java.util.Date;
 
 @Service
 public class ITPDataService {
-
     @Value("${nominatim.url}")
     private String nominatimUrl;
 
@@ -28,7 +27,7 @@ public class ITPDataService {
         this.processedITPDataExporter = processedITPDataExporter;
     }
 
-    public void processItpData(String itpId, ITPData itpData) throws CoordinatesNotFoundException, InvalidAddressException, NominatimServiceUnavailableException {
+    public void processItpData(String itpId, ITPData itpData) throws InvalidAddressException, NominatimServiceUnavailableException {
         String address = itpData.getMkd().getAddress();
 
         if (address == null || address.trim().isEmpty()) {
@@ -47,12 +46,11 @@ public class ITPDataService {
             itpData.setLongitude(response[0].getLongitude());
             itpData.setLatitude(response[0].getLatitude());
 
-            itpData.setTimestamp(new Date());
-
             processedITPDataExporter.exportITPData(itpId, itpData);
         } catch (RestClientException e) {
             throw new NominatimServiceUnavailableException();
+        } catch (Exception e) {
+            throw new RuntimeException("Unhandled exception during requesting nominatim server");
         }
-
     }
 }

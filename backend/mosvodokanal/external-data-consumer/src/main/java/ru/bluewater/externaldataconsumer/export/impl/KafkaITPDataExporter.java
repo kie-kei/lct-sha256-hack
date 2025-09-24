@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import ru.bluewater.externaldataconsumer.export.ITPDataExporter;
-import ru.bluewater.externaldataconsumer.model.ITPData;
+import ru.bluewater.integration.model.ITPData;
 
 @Component
 @RequiredArgsConstructor
