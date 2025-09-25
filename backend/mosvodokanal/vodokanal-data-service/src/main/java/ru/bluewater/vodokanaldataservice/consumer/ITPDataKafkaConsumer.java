@@ -34,7 +34,7 @@ public class ITPDataKafkaConsumer {
             log.debug("Processing ITP data message with key: {} on virtual thread: {}",
                     itpId, Thread.currentThread().isVirtual());
 
-            if (message == null || message.getItpMessage() == null) {
+            if (message == null || message.getItp() == null) {
                 log.warn("Invalid message received for key: {}", itpId);
                 return;
             }

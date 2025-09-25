@@ -26,7 +26,7 @@ public class ITPDataService {
     }
 
     public void processItpData(String itpId, ITPDataMessage itpDataMessage) throws InvalidAddressException, NominatimServiceUnavailableException {
-        String address = itpDataMessage.getMkdMessage().getAddress();
+        String address = itpDataMessage.getMkd().getAddress();
 
         if (address == null || address.trim().isEmpty()) {
             throw new InvalidAddressException();
@@ -48,7 +48,7 @@ public class ITPDataService {
         } catch (RestClientException e) {
             throw new NominatimServiceUnavailableException();
         } catch (Exception e) {
-            throw new RuntimeException("Unhandled exception during requesting nominatim server");
+            throw new RuntimeException("Unhandled exception during requesting nominatim server", e.getCause());
         }
     }
 }

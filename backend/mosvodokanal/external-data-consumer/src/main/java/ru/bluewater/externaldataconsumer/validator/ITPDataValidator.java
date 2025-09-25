@@ -15,25 +15,25 @@ public class ITPDataValidator {
     }
 
     private void validateITP(ITPDataMessage itpDataMessage) throws ITPDataException {
-        if (itpDataMessage.getItpMessage() == null) {
+        if (itpDataMessage.getItp() == null) {
             throw new ITPDataException("ITP information is required");
         }
 
-        if (itpDataMessage.getItpMessage().getId() == null) {
+        if (itpDataMessage.getItp().getId() == null) {
             throw new ITPDataException("ITP identifier is required");
         }
 
-        if (itpDataMessage.getItpMessage().getNumber() == null || itpDataMessage.getItpMessage().getNumber().trim().isEmpty()) {
+        if (itpDataMessage.getItp().getNumber() == null || itpDataMessage.getItp().getNumber().trim().isEmpty()) {
             throw new ITPDataException("ITP number is required");
         }
     }
 
     private void validateMKD(ITPDataMessage itpDataMessage) throws ITPDataException {
-        if (itpDataMessage.getMkdMessage() == null) {
+        if (itpDataMessage.getMkd() == null) {
             throw new ITPDataException("MKD data is required");
         }
 
-        if (itpDataMessage.getMkdMessage().getAddress() == null || itpDataMessage.getMkdMessage().getAddress().trim().isEmpty()) {
+        if (itpDataMessage.getMkd().getAddress() == null || itpDataMessage.getMkd().getAddress().trim().isEmpty()) {
             throw new ITPDataException("MKD address is required");
         }
     }

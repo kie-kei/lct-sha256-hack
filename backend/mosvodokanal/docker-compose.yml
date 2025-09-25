@@ -23,6 +23,7 @@ services:
       KAFKA_LOG_RETENTION_HOURS: 12
       KAFKA_LOG_SEGMENT_BYTES: 1073741824
       KAFKA_LOG_RETENTION_BYTES: 1073741824
+    user: "0:0"
     volumes:
       - kafka-data:/tmp/kraft-combined-logs
     healthcheck:
@@ -57,10 +58,8 @@ services:
       POSTGRES_DB: vodokanal_db
       POSTGRES_USER: vodokanal_user
       POSTGRES_PASSWORD: vodokanal_password
-      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ./init-scripts:/docker-entrypoint-initdb.d
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U vodokanal_user -d vodokanal_db" ]
       interval: 30s
@@ -85,11 +84,7 @@ services:
 
 volumes:
   kafka-data:
-    driver: local
   postgres-data:
-    driver: local
-  redis-data:
-    driver: local
 
 networks:
   app-network:

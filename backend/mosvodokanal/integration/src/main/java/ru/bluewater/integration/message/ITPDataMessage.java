@@ -14,15 +14,15 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ITPDataMessage {
-    private ITPMessage itpMessage;
-    private MKDMessage mkdMessage;
-    private List<ODPUGVSDeviceMessage> odpuGvsDeviceMessages;
+    private ITPMessage itp;
+    private MKDMessage mkd;
+    private List<ODPUGVSDeviceMessage> odpuGvsDevice;
     private List<WaterMeterXVSITPMessage> waterMeters;
     private String latitude;
     private String longitude;
     private Date timestamp;
 
     public UUID getITPId() {
-        return itpMessage != null ? itpMessage.getId() : null;
+        return itp != null ? itp.getId() : null;
     }
 }

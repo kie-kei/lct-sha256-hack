@@ -32,7 +32,7 @@ public class ITPDataMessageProcessorService {
 
     @Transactional
     public void processITPDataMessage(ITPDataMessage message) {
-        UUID itpId = message.getItpMessage().getId();
+        UUID itpId = message.getItp().getId();
         log.debug("Processing enriched ITP data message for ITP ID: {}", itpId);
 
         try {
@@ -53,27 +53,27 @@ public class ITPDataMessageProcessorService {
     }
 
     private ITPEntity processITP(ITPDataMessage message) {
-        UUID itpId = message.getItpMessage().getId();
+        UUID itpId = message.getItp().getId();
 
         return itpRepository.findById(itpId)
                 .map(existingITP -> {
                     log.debug("ITP already exists, updating: {}", itpId);
                     // Обновляем существующий ITP если нужно
-                    if (!existingITP.getNumber().equals(message.getItpMessage().getNumber())) {
-                        existingITP.setNumber(message.getItpMessage().getNumber());
+                    if (!existingITP.getNumber().equals(message.getItp().getNumber())) {
+                        existingITP.setNumber(message.getItp().getNumber());
                         return itpRepository.save(existingITP);
                     }
                     return existingITP;
                 })
                 .orElseGet(() -> {
                     log.debug("Creating new ITP: {}", itpId);
-                    ITPEntity newITP = itpMessageMapper.toITPEntity(message.getItpMessage());
+                    ITPEntity newITP = itpMessageMapper.toITPEntity(message.getItp());
                     return itpRepository.save(newITP);
                 });
     }
 
     private MKDEntity processMKD(ITPDataMessage message, ITPEntity itpEntity) {
-        if (message.getMkdMessage() == null) {
+        if (message.getMkd() == null) {
             log.debug("No MKD data in message for ITP: {}", itpEntity.getId());
             return null;
         }
@@ -82,12 +82,12 @@ public class ITPDataMessageProcessorService {
                 .map(existingMKD -> {
                     log.debug("MKD already exists for ITP: {}, updating", itpEntity.getId());
                     // Обновляем существующий MKD
-                    itpMessageMapper.updateMKDEntity(existingMKD, message.getMkdMessage());
+                    itpMessageMapper.updateMKDEntity(existingMKD, message.getMkd());
                     return mkdRepository.save(existingMKD);
                 })
                 .orElseGet(() -> {
                     log.debug("Creating new MKD for ITP: {}", itpEntity.getId());
-                    MKDEntity newMKD = itpMessageMapper.toMKDEntity(message.getMkdMessage());
+                    MKDEntity newMKD = itpMessageMapper.toMKDEntity(message.getMkd());
                     newMKD.setItp(itpEntity);
                     return mkdRepository.save(newMKD);
                 });
@@ -97,7 +97,7 @@ public class ITPDataMessageProcessorService {
         List<WaterMeterDataEntity> waterMeterDataList = new ArrayList<>();
 
         // Объединяем данные ГВС и ХВС в одну запись
-        List<ODPUGVSDeviceMessage> gvsDevices = message.getOdpuGvsDeviceMessages();
+        List<ODPUGVSDeviceMessage> gvsDevices = message.getOdpuGvsDevice();
         List<WaterMeterXVSITPMessage> hvsDevices = message.getWaterMeters();
 
         if (gvsDevices == null || hvsDevices == null) {
