@@ -1,15 +1,15 @@
-package ru.bluewater.itpdataprocessing.service;
+package ru.bluewater.itpdataanalyzing.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import ru.bluewater.integration.message.ITPDataMessage;
-import ru.bluewater.itpdataprocessing.dto.NominatimResponse;
-import ru.bluewater.itpdataprocessing.exception.CoordinatesNotFoundException;
-import ru.bluewater.itpdataprocessing.exception.InvalidAddressException;
-import ru.bluewater.itpdataprocessing.exception.NominatimServiceUnavailableException;
-import ru.bluewater.itpdataprocessing.export.ProcessedITPDataExporter;
+import ru.bluewater.itpdataanalyzing.dto.NominatimResponse;
+import ru.bluewater.itpdataanalyzing.exception.CoordinatesNotFoundException;
+import ru.bluewater.itpdataanalyzing.exception.InvalidAddressException;
+import ru.bluewater.itpdataanalyzing.exception.NominatimServiceUnavailableException;
+import ru.bluewater.itpdataanalyzing.export.ProcessedITPDataExporter;
 
 @Service
 public class ITPDataService {

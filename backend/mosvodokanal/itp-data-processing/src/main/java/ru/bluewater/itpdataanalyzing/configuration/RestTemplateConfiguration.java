@@ -1,4 +1,4 @@
-package ru.bluewater.itpdataprocessing.configuration;
+package ru.bluewater.itpdataanalyzing.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

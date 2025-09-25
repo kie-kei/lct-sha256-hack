@@ -6,11 +6,6 @@ spring:
     virtual:
       enabled: true
 
-  task:
-    execution:
-      pool:
-        virtual-threads: true
-
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
@@ -20,35 +15,35 @@ spring:
         heartbeat.interval.ms: 10000
         connections.max.idle.ms: 540000
         num.consumer.fetchers: 20
-      listener:
-        concurrency: 20
+    listener:
+      concurrency: 20
 
   datasource:
     url: jdbc:postgresql://localhost:5432/vodokanal_db
     username: ${DB_USERNAME:vodokanal_user}
     password: ${DB_PASSWORD:password}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 100
+      connection-timeout: 30000
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
-  liquibase:
-    change-log: classpath:db/changelog/db.changelog-master.xml
-
 server:
-  port: 8081
+  port: 8080
 
 management:
   endpoints:
     web:
       exposure:
-        include: health,metrics,prometheus,info,kafka
+        include: health,metrics,prometheus,info
 
 logging:
   level:

@@ -1,4 +1,4 @@
-package ru.bluewater.itpdataprocessing.dto;
+package ru.bluewater.itpdataanalyzing.dto;
 
 import lombok.Getter;
 

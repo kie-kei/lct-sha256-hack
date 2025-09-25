@@ -1,4 +1,4 @@
-package ru.bluewater.itpdataprocessing.configuration;
+package ru.bluewater.itpdataanalyzing.configuration;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;

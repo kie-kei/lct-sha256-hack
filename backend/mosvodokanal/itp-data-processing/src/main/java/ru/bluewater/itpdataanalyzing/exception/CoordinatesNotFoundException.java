@@ -1,4 +1,4 @@
-package ru.bluewater.itpdataprocessing.exception;
+package ru.bluewater.itpdataanalyzing.exception;
 
 public class CoordinatesNotFoundException extends Exception {
     public CoordinatesNotFoundException() {
