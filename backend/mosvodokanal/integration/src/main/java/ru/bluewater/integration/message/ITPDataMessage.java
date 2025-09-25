@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -16,10 +17,8 @@ import java.util.UUID;
 public class ITPDataMessage {
     private ITPMessage itp;
     private MKDMessage mkd;
-    private List<ODPUGVSDeviceMessage> odpuGvsDevice;
+    private List<ODPUGVSDeviceMessage> odpuGvsDevices;
     private List<WaterMeterXVSITPMessage> waterMeters;
-    private String latitude;
-    private String longitude;
     private Date timestamp;
 
     public UUID getITPId() {

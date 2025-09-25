@@ -18,6 +18,9 @@ spring:
     listener:
       concurrency: 20
 
+server:
+  port: 8082
+
 management:
   endpoints:
     web:

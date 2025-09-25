@@ -4,6 +4,6 @@ import lombok.Getter;
 
 @Getter
 public class NominatimResponse {
-    private String latitude;
-    private String longitude;
+    private String lat;
+    private String lon;
 }

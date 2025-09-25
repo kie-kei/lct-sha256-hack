@@ -97,7 +97,7 @@ public class ITPDataMessageProcessorService {
         List<WaterMeterDataEntity> waterMeterDataList = new ArrayList<>();
 
         // Объединяем данные ГВС и ХВС в одну запись
-        List<ODPUGVSDeviceMessage> gvsDevices = message.getOdpuGvsDevice();
+        List<ODPUGVSDeviceMessage> gvsDevices = message.getOdpuGvsDevices();
         List<WaterMeterXVSITPMessage> hvsDevices = message.getWaterMeters();
 
         if (gvsDevices == null || hvsDevices == null) {

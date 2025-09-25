@@ -10,6 +10,9 @@ import ru.bluewater.itpdataanalyzing.exception.CoordinatesNotFoundException;
 import ru.bluewater.itpdataanalyzing.exception.InvalidAddressException;
 import ru.bluewater.itpdataanalyzing.exception.NominatimServiceUnavailableException;
 import ru.bluewater.itpdataanalyzing.export.ProcessedITPDataExporter;
+import ru.bluewater.itpdataanalyzing.util.NumberUtil;
+
+import java.math.BigDecimal;
 
 @Service
 public class ITPDataService {
@@ -19,10 +22,12 @@ public class ITPDataService {
     private final RestTemplate restTemplate;
 
     private final ProcessedITPDataExporter processedITPDataExporter;
+    private final NumberUtil numberUtil;
 
-    public ITPDataService(RestTemplate restTemplate, ProcessedITPDataExporter processedITPDataExporter) {
+    public ITPDataService(RestTemplate restTemplate, ProcessedITPDataExporter processedITPDataExporter, NumberUtil numberUtil) {
         this.restTemplate = restTemplate;
         this.processedITPDataExporter = processedITPDataExporter;
+        this.numberUtil = numberUtil;
     }
 
     public void processItpData(String itpId, ITPDataMessage itpDataMessage) throws InvalidAddressException, NominatimServiceUnavailableException {
@@ -41,14 +46,14 @@ public class ITPDataService {
                 throw new CoordinatesNotFoundException();
             }
 
-            itpDataMessage.setLongitude(response[0].getLongitude());
-            itpDataMessage.setLatitude(response[0].getLatitude());
+            itpDataMessage.getMkd().setLongitude(numberUtil.convertStringToBigDecimal(response[0].getLon()));
+            itpDataMessage.getMkd().setLatitude(numberUtil.convertStringToBigDecimal(response[0].getLat()));
 
             processedITPDataExporter.exportITPData(itpId, itpDataMessage);
         } catch (RestClientException e) {
             throw new NominatimServiceUnavailableException();
         } catch (Exception e) {
-            throw new RuntimeException("Unhandled exception during requesting nominatim server", e.getCause());
+            throw new RuntimeException(e.getMessage());
         }
     }
 }
