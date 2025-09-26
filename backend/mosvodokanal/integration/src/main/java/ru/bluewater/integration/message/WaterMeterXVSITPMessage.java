@@ -13,5 +13,5 @@ import java.util.UUID;
 @AllArgsConstructor
 public class WaterMeterXVSITPMessage {
     private UUID identifier; // Идентификатор
-    private Integer flowValue; // Значение расхода
+    private Float flowValue; // Значение расхода
 }

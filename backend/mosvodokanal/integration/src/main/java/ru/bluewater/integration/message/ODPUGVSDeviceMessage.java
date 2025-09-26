@@ -15,5 +15,6 @@ public class ODPUGVSDeviceMessage {
     private UUID heatMeterIdentifier; // Идентификатор тепловычислителя
     private UUID firstChannelFlowmeterIdentifier; // Идентификатор расходомера первого канала
     private UUID secondChannelFlowmeterIdentifier; // Идентификатор расходомера второго канала
-    private Integer flowValue; // Значение расхода
+    private Float firstChannelFlowValue; // Значение расхода первого канала
+    private Float secondChannelFlowValue; // Значение расхода второго канала
 }

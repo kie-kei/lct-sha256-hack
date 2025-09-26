@@ -13,12 +13,16 @@ public class WaterMeterDataUpdateRequest {
     private UUID firstChannelFlowmeterIdentifier;
     private UUID secondChannelFlowmeterIdentifier;
     @PositiveOrZero
-    private Integer gvsFlowValue;
+    private Float gvsFirstChannelFlowValue;
+    @PositiveOrZero
+    private Float gvsSecondChannelFlowValue;
+    @PositiveOrZero
+    private Float gvsConsumptionFlowValue;
 
     // ХВС данные
     private UUID waterMeterIdentifier;
     @PositiveOrZero
-    private Integer hvsFlowValue;
+    private Float hvsFlowValue;
     @NotNull
     private LocalDateTime measurementTimestamp;
 }

@@ -36,14 +36,18 @@ public class WaterMeterDataEntity {
     private UUID firstChannelFlowmeterIdentifier;
     @Column(name = "second_channel_flowmeter_identifier")
     private UUID secondChannelFlowmeterIdentifier;
-    @Column(name = "gvs_flow_value")
-    private Integer gvsFlowValue;
+    @Column(name = "gvs_first_channel_flow_value")
+    private Float gvsFirstChannelFlowValue; // Подача
+    @Column(name = "gvs_second_channel_flow_value")
+    private Float gvsSecondChannelFlowValue; // Обратка
+    @Column(name = "gvs_consumption_flow_value")
+    private Float gvsConsumptionFlowValue; // Потребление
 
     // ХВС данные
     @Column(name = "water_meter_identifier")
     private UUID waterMeterIdentifier;
     @Column(name = "hvs_flow_value")
-    private Integer hvsFlowValue;
+    private Float hvsFlowValue;
 
     @CreationTimestamp
     @Column(name = "created_at")

@@ -120,7 +120,9 @@ public class ITPDataMessageProcessorService {
             waterMeterData.setHeatMeterIdentifier(gvsDevice.getHeatMeterIdentifier());
             waterMeterData.setFirstChannelFlowmeterIdentifier(gvsDevice.getFirstChannelFlowmeterIdentifier());
             waterMeterData.setSecondChannelFlowmeterIdentifier(gvsDevice.getSecondChannelFlowmeterIdentifier());
-            waterMeterData.setGvsFlowValue(gvsDevice.getFlowValue());
+            waterMeterData.setGvsFirstChannelFlowValue(gvsDevice.getFirstChannelFlowValue());
+            waterMeterData.setGvsSecondChannelFlowValue(gvsDevice.getSecondChannelFlowValue());
+            waterMeterData.setGvsConsumptionFlowValue(gvsDevice.getFirstChannelFlowValue() - gvsDevice.getSecondChannelFlowValue());
 
             // ХВС данные
             WaterMeterXVSITPMessage hvsDevice = hvsDevices.get(i);

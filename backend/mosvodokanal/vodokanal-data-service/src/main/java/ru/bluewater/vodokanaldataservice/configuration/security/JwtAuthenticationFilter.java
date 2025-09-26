@@ -10,16 +10,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import ru.bluewater.vodokanaldataservice.util.JwtUtils;
+import ru.bluewater.vodokanaldataservice.util.JwtUtil;
 
 import java.io.IOException;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private final JwtUtils jwtUtils;
+    private final JwtUtil jwtUtils;
 
     @Autowired
-    public JwtAuthenticationFilter(JwtUtils jwtUtils) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtils) {
         this.jwtUtils = jwtUtils;
     }
 
