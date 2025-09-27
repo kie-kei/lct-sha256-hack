@@ -1,4 +1,4 @@
-ervices:
+services:
   external-data-consumer:
     image: external-data-consumer:latest
     restart: "no"
