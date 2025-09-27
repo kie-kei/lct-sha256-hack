@@ -1,9 +1,12 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import keycloak from "./keycloak";
-import "./style.css";
+import "../index.css";
 import { createPinia } from "pinia";
-
+import OpenLayersMap from "vue3-openlayers";
+import { setupRouter } from "./router";
+// import { Map, Layers, Sources } from "vue3-openlayers";
+import { Layers } from "vue3-openlayers";
 const app = createApp(App);
 const pinia = createPinia();
 keycloak
@@ -20,6 +23,12 @@ keycloak
     }
 
     app.use(pinia);
+    app.use(setupRouter());
+    app.use(OpenLayersMap);
+
+    // app.use(Map);
+
+    // app.use(Sources);
     app.mount("#app");
   })
   .catch((error) => {
