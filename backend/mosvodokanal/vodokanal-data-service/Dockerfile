@@ -1,14 +1,14 @@
-FROM bellsoft/liberica-openjdk-alpine:25 AS builder
+FROM bellsoft/liberica-openjdk-alpine:21 AS builder
 WORKDIR /application
 COPY . .
 RUN --mount=type=cache,target=/root/.m2 chmod +x mvnw && ./mvnw clean install -Pvodokanal-data-service -Dmaven.test.skip
 
-FROM bellsoft/liberica-openjre-alpine:25 AS layers
+FROM bellsoft/liberica-openjre-alpine:21 AS layers
 WORKDIR /application
 COPY --from=builder /application/vodokanal-data-service/target/*.jar app.jar
 RUN java -Djarmode=tools -jar app.jar extract --layers --destination extracted
 
-FROM bellsoft/liberica-openjre-alpine:25
+FROM bellsoft/liberica-openjre-alpine:21
 VOLUME /tmp
 RUN adduser -S spring-user
 USER spring-user
