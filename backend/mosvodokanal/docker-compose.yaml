@@ -5,12 +5,6 @@ services:
       context: .
       dockerfile: external-data-consumer/Dockerfile
 
-  itp-data-analyzing:
-    image: itp-data-analyzing:latest
-    build:
-      context: .
-      dockerfile: itp-data-analyzing/Dockerfile
-
   itp-data-processing:
     image: itp-data-processing:latest
     build:
