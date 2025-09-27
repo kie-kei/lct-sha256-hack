@@ -1,4 +1,4 @@
-package ru.bluewater.itpdataanalyzing.configuration;
+package ru.bluewater.itpdataprocessing.configuration;
 
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.aop.interceptor.SimpleAsyncUncaughtExceptionHandler;

@@ -1,4 +1,4 @@
-package ru.bluewater.itpdataanalyzing.consumer;
+package ru.bluewater.itpdataprocessing.consumer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -6,6 +6,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import ru.bluewater.integration.message.ITPDataMessage;
+import ru.bluewater.itpdataprocessing.service.ITPDataService;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -15,6 +16,8 @@ import java.util.concurrent.Executors;
 @RequiredArgsConstructor
 @Slf4j
 public class ITPDataConsumer {
+    private final ITPDataService itpDataService;
+
     @KafkaListener(
             topics = "${app.kafka.topic.input}",
             groupId = "${spring.kafka.consumer.group-id}",
@@ -37,7 +40,7 @@ public class ITPDataConsumer {
     private void processRecord(String itpId, ITPDataMessage itpDataMessage) {
         try {
             log.debug("Processing on virtual thread: {}", Thread.currentThread().isVirtual());
-            // analyzing and processing
+            itpDataService.processItpData(itpId, itpDataMessage);
         } catch (Exception e) {
             log.error("Error processing ITP data with key: {}", itpId, e);
         }
