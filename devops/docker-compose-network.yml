@@ -1,4 +1,0 @@
-services:
-networks:
-  main-netwok:
-    driver: bridge

@@ -60,10 +60,11 @@ ervices:
       retries: 5
     labels:
       amplicode.image: springboot
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/vodokanal_db
     networks:
       - main-network
 
 networks:
   main-network:
     external: true
-
