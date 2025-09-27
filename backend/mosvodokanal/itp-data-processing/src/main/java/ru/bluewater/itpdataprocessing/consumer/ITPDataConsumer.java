@@ -1,4 +1,4 @@
-package ru.bluewater.itpdataanalyzing.consumer;
+package ru.bluewater.itpdataprocessing.consumer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -6,7 +6,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import ru.bluewater.integration.message.ITPDataMessage;
-import ru.bluewater.itpdataanalyzing.service.ITPDataService;
+import ru.bluewater.itpdataprocessing.service.ITPDataService;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
