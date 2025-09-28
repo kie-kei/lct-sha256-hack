@@ -26,7 +26,7 @@ public interface WaterMeterDataRepository extends JpaRepository<WaterMeterDataEn
             "FROM WaterMeterDataEntity w2 WHERE w2.itp.id = :itpId)")
     List<WaterMeterDataEntity> findLatestByItpId(@Param("itpId") UUID itpId);
 
-    @Query("SELECT AVG(w.gvsFlowValue) FROM WaterMeterDataEntity w " +
+    @Query("SELECT AVG(w.gvsConsumptionFlowValue) FROM WaterMeterDataEntity w " +
             "WHERE w.itp.id = :itpId AND w.measurementTimestamp BETWEEN :startDate AND :endDate")
     Double getAverageGvsFlowByItpIdAndPeriod(@Param("itpId") UUID itpId,
                                              @Param("startDate") LocalDateTime startDate,

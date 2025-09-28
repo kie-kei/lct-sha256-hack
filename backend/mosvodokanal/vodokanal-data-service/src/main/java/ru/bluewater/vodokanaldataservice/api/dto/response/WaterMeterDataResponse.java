@@ -13,11 +13,13 @@ public class WaterMeterDataResponse {
     private UUID heatMeterIdentifier;
     private UUID firstChannelFlowmeterIdentifier;
     private UUID secondChannelFlowmeterIdentifier;
-    private Integer gvsFlowValue;
+    private Float gvsFirstChannelFlowValue;
+    private Float gvsSecondChannelFlowValue;
+    private Float gvsConsumptionFlowValue;
 
     // ХВС данные
     private UUID waterMeterIdentifier;
-    private Integer hvsFlowValue;
+    private Float hvsFlowValue;
 
     private LocalDateTime measurementTimestamp;
     private LocalDateTime createdAt;

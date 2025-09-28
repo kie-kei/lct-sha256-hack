@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import java.util.function.Function;
 
 @Component
-public class JwtUtils {
+public class JwtUtil {
     public String extractUsername(String token) {
         return extractClaim(token, claims -> claims.get("preferred_username", String.class));
     }
