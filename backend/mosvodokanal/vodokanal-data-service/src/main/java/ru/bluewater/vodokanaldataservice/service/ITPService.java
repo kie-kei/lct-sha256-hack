@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.bluewater.integration.response.NominatimResponse;
-import ru.bluewater.vodokanaldataservice.api.client.ItpDataProcessingClient;
+import ru.bluewater.vodokanaldataservice.client.ItpDataProcessingClient;
 import ru.bluewater.vodokanaldataservice.api.dto.request.ITPCreateRequest;
 import ru.bluewater.vodokanaldataservice.api.dto.request.ITPUpdateRequest;
 import ru.bluewater.vodokanaldataservice.api.dto.response.ITPDetailResponse;

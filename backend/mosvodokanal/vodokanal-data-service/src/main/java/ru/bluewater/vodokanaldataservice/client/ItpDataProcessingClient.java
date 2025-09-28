@@ -1,4 +1,4 @@
-package ru.bluewater.vodokanaldataservice.api.client;
+package ru.bluewater.vodokanaldataservice.client;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

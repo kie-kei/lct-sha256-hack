@@ -49,7 +49,7 @@ public class MKDController {
     public ResponseEntity<Page<MKDResponse>> searchMKDs(
             @RequestParam String address,
             @PageableDefault(size = 20) Pageable pageable) {
-        log.info("GET /api/v1/mkd/search?address={} - Searching MKDs", address);
+        log.debug("GET /api/v1/mkd/search?address={} - Searching MKDs", address);
         return ResponseEntity.ok(mkdService.findByAddressContaining(address, pageable));
     }
 

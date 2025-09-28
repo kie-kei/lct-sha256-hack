@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.bluewater.integration.response.NominatimResponse;
-import ru.bluewater.vodokanaldataservice.api.client.ItpDataProcessingClient;
+import ru.bluewater.vodokanaldataservice.client.ItpDataProcessingClient;
 import ru.bluewater.vodokanaldataservice.api.dto.request.MKDCreateRequest;
 import ru.bluewater.vodokanaldataservice.api.dto.request.MKDUpdateRequest;
 import ru.bluewater.vodokanaldataservice.api.dto.response.MKDResponse;
@@ -18,7 +18,6 @@ import ru.bluewater.vodokanaldataservice.entity.MKDEntity;
 import ru.bluewater.vodokanaldataservice.api.exception.BusinessException;
 import ru.bluewater.vodokanaldataservice.api.exception.ResourceNotFoundException;
 import ru.bluewater.vodokanaldataservice.mapper.MKDMapper;
-import ru.bluewater.vodokanaldataservice.repository.DistrictRepository;
 import ru.bluewater.vodokanaldataservice.repository.ITPRepository;
 import ru.bluewater.vodokanaldataservice.repository.MKDRepository;
 

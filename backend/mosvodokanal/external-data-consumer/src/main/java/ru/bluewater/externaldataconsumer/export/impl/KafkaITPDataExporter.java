@@ -25,7 +25,7 @@ public class KafkaITPDataExporter implements ITPDataExporter {
                     if (throwable != null) {
                         log.error("Failed to send ITP data with key: {}", itpId, throwable);
                     } else {
-                        log.info("Successfully sent ITP data with key: {}", itpId);
+                        log.debug("Successfully sent ITP data with key: {}", itpId);
                     }
                 });
     }

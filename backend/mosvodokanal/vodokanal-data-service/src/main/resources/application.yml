@@ -62,6 +62,7 @@ app:
   kafka:
     topic:
       input: processed-itp-data
+      accidents: predicted-itp-accidents
 
 itp-data-processing:
   url: http://localhost:8082
