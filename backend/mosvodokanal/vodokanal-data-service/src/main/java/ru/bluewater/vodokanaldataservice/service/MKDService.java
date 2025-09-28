@@ -34,6 +34,13 @@ public class MKDService {
     private final MKDMapper mkdMapper;
     private final ItpDataProcessingClient itpDataProcessingClient;
 
+    public List<MKDResponse> findAll() {
+        log.debug("Getting all MKDs without pagination");
+        return mkdRepository.findAll().stream()
+                .map(mkdMapper::toResponse)
+                .toList();
+    }
+
     public Page<MKDResponse> findAll(Pageable pageable) {
         log.debug("Getting all MKDs with pagination: {}", pageable);
         return mkdRepository.findAll(pageable)
