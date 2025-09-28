@@ -1,4 +1,4 @@
-package ru.bluewater.itpdataanalyzing.util;
+package ru.bluewater.itpdataprocessing.util;
 
 import org.springframework.stereotype.Component;
 
