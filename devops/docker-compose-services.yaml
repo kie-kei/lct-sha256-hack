@@ -30,7 +30,7 @@ services:
       retries: 5
     environment:
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - NOMINATIM_URL=nominatim:8001
+      - NOMINATIM_URL=http://nominatim-moscow:8080
     labels:
       amplicode.image: springboot
     networks:
@@ -52,6 +52,7 @@ services:
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/vodokanal_db
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - ITP_DATA_PROCESSING_URL=http://itp-data-processing:8082
     networks:
       - main-network
 
