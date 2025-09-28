@@ -10,22 +10,8 @@ services:
       timeout: 5s
       start_period: 30s
       retries: 5
-    labels:
-      amplicode.image: springboot
-    networks:
-      - main-network
-
-  itp-data-analyzing:
-    image: itp-data-analyzing:latest
-    restart: "no"
-    ports:
-      - "8080:8080"
-    healthcheck:
-      test: wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1
-      interval: 30s
-      timeout: 5s
-      start_period: 30s
-      retries: 5
+    environment:
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
     labels:
       amplicode.image: springboot
     networks:
@@ -42,6 +28,9 @@ services:
       timeout: 5s
       start_period: 30s
       retries: 5
+    environment:
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - NOMINATIM_URL=nominatim:8001
     labels:
       amplicode.image: springboot
     networks:
@@ -62,6 +51,7 @@ services:
       amplicode.image: springboot
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/vodokanal_db
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
     networks:
       - main-network
 
