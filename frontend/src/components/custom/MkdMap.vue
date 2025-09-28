@@ -1,9 +1,5 @@
 <template>
-  <ol-map
-    :loadTilesWhileAnimating="true"
-    :loadTilesWhileInteracting="true"
-    style="height: 100%"
-  >
+  <ol-map :loadTilesWhileAnimating="true" :loadTilesWhileInteracting="true">
     <ol-view
       ref="view"
       :center="center"
@@ -24,7 +20,6 @@
       :pointRadius="20"
       :featureStyle="featureStyle"
     >
-      <!-- style of the marked selected from the cluster items after first click on the cluster itself -->
       <ol-style>
         <ol-style-icon :src="markerIcon" :scale="0.1"></ol-style-icon>
       </ol-style>
@@ -35,7 +30,7 @@
         <ol-feature
           v-for="(itm, idx) in coordinates"
           :key="idx"
-          :properties="{ danger: itm.danger }"
+          :properties="{ danger: itm.danger, id: itm.id }"
         >
           <ol-geom-point :coordinates="itm.cord"></ol-geom-point>
         </ol-feature>
@@ -67,80 +62,29 @@ import { fromLonLat, transformExtent } from "ol/proj";
 import "ol/ol.css";
 import { ref } from "vue";
 
+const { mkdList } = defineProps<{ mkdList: MKDResponse[] }>();
+
 import { Circle, Fill, Stroke, Style } from "ol/style";
 import markerIcon from "@/assets/apartment-building.png";
 import { computed } from "vue";
-import { mkdApi } from "@/api/mkd";
-import { onMounted } from "vue";
-import type { MKDResponse, Pageable, PageMKDResponse } from "@/api/types";
+import type { MKDResponse } from "@/api/types";
+import type { Coordinate } from "ol/coordinate";
 const moscowBounds4326 = [37.3, 55.5, 37.9, 55.9];
 const moscowExtent = transformExtent(
   moscowBounds4326,
   "EPSG:4326",
   "EPSG:3857",
 );
-const projection = ref("EPSG:4326");
-const sampleData = [
-  {
-    cord: [37.72536579931718, 55.7474097],
-    danger: true,
-  },
-  {
-    cord: [37.6253657893133, 55.7474097],
-    danger: true,
-  },
-  {
-    cord: [37.63536578931718, 55.7474197],
-    danger: false,
-  },
-];
-const test = computed(() =>
-  sampleData.map((x) => {
-    return {
-      cord: fromLonLat(x.cord),
-      danger: x.danger,
-    };
-  }),
-);
+
 const coordinates = computed(() =>
-  mkdList.value.map((x) => {
-    return { danger: true, cord: fromLonLat([x.longitude, x.latitude]) };
+  mkdList.map((x) => {
+    return {
+      danger: true,
+      cord: fromLonLat([x.longitude, x.latitude]),
+      id: x.id,
+    };
   }),
 );
-const loading = ref(false);
-const error = ref<string | null>(null);
-const mkdList = ref<MKDResponse[]>([]);
-const pageable = ref<Pageable>({
-  page: 0,
-  size: 10,
-  sort: ["id", "asc"],
-});
-
-// Функция загрузки данных
-const loadMkdList = async () => {
-  loading.value = true;
-  error.value = null;
-
-  try {
-    const response: PageMKDResponse = await mkdApi.getAll(pageable.value);
-    mkdList.value = response.content; // или [...mkdList.value, ...response.content] для бесконечной прокрутки
-    pageable.value = {
-      ...pageable.value,
-      page: response.number,
-      hasNext: response.number < response.totalPages - 1,
-    };
-  } catch (err) {
-    console.error("Ошибка при загрузке MKD:", err);
-    error.value = "Не удалось загрузить данные. Попробуйте позже.";
-  } finally {
-    loading.value = false;
-  }
-};
-
-// Загрузка при монтировании
-onMounted(() => {
-  loadMkdList();
-});
 
 const center = ref(fromLonLat([37.6173, 55.7558]));
 
@@ -159,7 +103,8 @@ function resolutionChanged(event) {
 
 function centerChanged(event) {
   const center3857 = event.target.getCenter();
-  const center4326 = fromLonLat(center3857, "EPSG:3857");
+  const center4326: Coordinate = fromLonLat(center3857, "EPSG:3857");
+  if (center4326[0] === undefined || center4326[1] === undefined) return;
   currentCenter.value = [
     parseFloat(center4326[0].toFixed(6)),
     parseFloat(center4326[1].toFixed(6)),
@@ -193,26 +138,29 @@ const featureStyle = () => {
 };
 
 const overrideStyleFunction = (feature, style) => {
-  const clusteredFeatures = feature.get("features"); // массив оригинальных фич
+  const clusteredFeatures = feature.get("features");
 
-  // Проверяем: есть ли хотя бы одна опасная точка?
   const hasDanger = clusteredFeatures.some((f) => f.get("danger") === true);
 
-  const color = hasDanger ? "255,0,0" : "0,128,0"; // красный или зеленый
+  const color = hasDanger ? "255,0,0" : "0,128,0";
   const radius = Math.max(8, Math.min(clusteredFeatures.length, 20));
 
-  // Обновляем стиль круга
   style.getImage().getStroke().setColor(`rgba(${color}, 0.5)`);
   style.getImage().getFill().setColor(`rgba(${color}, 1)`);
 
-  // Можно также менять текст или другие элементы
   style.getText().setText(clusteredFeatures.length.toString());
   style.getImage().setRadius(radius);
 
   return style;
 };
-
+const emits = defineEmits(["selected"]);
 const featureSelected = (event) => {
-  console.log(event);
+  const allMkd = event.target.features_.array_;
+  const selected = allMkd.map((x) => {
+    const clusteredFeatures = x.get("features");
+    return clusteredFeatures.find((f) => f.get("id")).values_.id;
+  });
+  console.log("selected", selected);
+  emits("selected", selected);
 };
 </script>

@@ -15,6 +15,29 @@ const routes: RouteRecordRaw[] = [
         path: "/map",
         name: "map",
         component: () => import("../pages/MapPage.vue"),
+        meta: {
+          breadcrumb: "Карта",
+          backPath: "/map",
+        },
+      },
+      {
+        path: "/itp",
+        name: "itp",
+        component: () => import("@/pages/ItpPage.vue"),
+        meta: {
+          breadcrumb: "ИТП и МКД",
+          backPath: "/itp",
+        },
+      },
+      {
+        path: "/itp/:uuid/water_meter",
+        name: "water_meter",
+        component: () => import("@/pages/ItpDetailPage.vue"),
+        props: true,
+        meta: {
+          breadcrumb: "ИТП и МКД",
+          backPath: "/itp",
+        },
       },
     ],
   },

@@ -101,9 +101,9 @@ export interface MKDResponse {
   address: string;
   fias: string;
   unom: string;
-  latitude?: number;
-  longitude?: number;
-  itpId?: UUID;
+  latitude: number;
+  longitude: number;
+  itpId: UUID;
   createdAt: string;
   updatedAt: string;
 }

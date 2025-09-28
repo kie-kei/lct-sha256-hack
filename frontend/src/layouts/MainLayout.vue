@@ -12,13 +12,15 @@
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem class="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Building Your Application
+                  <BreadcrumbLink @click="handleBackPath" href="#">
+                    {{ route.meta.breadcrumb }}
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator class="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
+                  <BreadcrumbPage v-if="applicationStore.secondLayer">{{
+                    applicationStore.secondLayer
+                  }}</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -51,4 +53,14 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { useApplicationStore } from "@/store/applicationStore";
+import { useRoute, useRouter } from "vue-router";
+
+const route = useRoute();
+const router = useRouter();
+const applicationStore = useApplicationStore();
+const handleBackPath = () => {
+  router.push(route.meta.backPath!);
+  applicationStore.secondLayer = "";
+};
 </script>
