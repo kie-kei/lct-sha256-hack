@@ -5,10 +5,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import ru.bluewater.integration.message.ITPDataMessage;
-import ru.bluewater.itpdataprocessing.dto.NominatimResponse;
-import ru.bluewater.itpdataprocessing.exception.CoordinatesNotFoundException;
-import ru.bluewater.itpdataprocessing.exception.InvalidAddressException;
-import ru.bluewater.itpdataprocessing.exception.NominatimServiceUnavailableException;
+import ru.bluewater.itpdataprocessing.api.dto.response.NominatimResponse;
+import ru.bluewater.itpdataprocessing.api.exception.CoordinatesNotFoundException;
+import ru.bluewater.itpdataprocessing.api.exception.InvalidAddressException;
+import ru.bluewater.itpdataprocessing.api.exception.NominatimServiceUnavailableException;
 import ru.bluewater.itpdataprocessing.export.ProcessedITPDataExporter;
 import ru.bluewater.itpdataprocessing.util.NumberUtil;
 

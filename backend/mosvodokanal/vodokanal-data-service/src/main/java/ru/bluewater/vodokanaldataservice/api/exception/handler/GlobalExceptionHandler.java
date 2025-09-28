@@ -7,8 +7,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.bluewater.vodokanaldataservice.api.exception.BusinessException;
-import ru.bluewater.vodokanaldataservice.api.exception.ResourceNotFoundException;
+import ru.bluewater.vodokanaldataservice.api.exception.*;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -76,6 +75,62 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .error("Internal Server Error")
                 .message("An unexpected error occurred")
+                .build();
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+
+    @ExceptionHandler(IncorrectWaterMeterDataFileExtensionException.class)
+    public ResponseEntity<ErrorResponse> handleIncorrectWaterMeterDataFileExtensionException(IncorrectWaterMeterDataFileExtensionException e) {
+        log.error("Incorrect watermeter data file extension", e);
+
+        ErrorResponse response = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error("Incorrect WaterMeter Data Files Extension")
+                .message(e.getMessage())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+
+    @ExceptionHandler(IncorrectTimeInWaterMeterDataException.class)
+    public ResponseEntity<ErrorResponse> handleIncorrectTimeInWaterMeterDataException(IncorrectTimeInWaterMeterDataException e) {
+        log.error("Incorrect time in watermeter data", e);
+
+        ErrorResponse response = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error("Incorrect Time In WaterMeter Data")
+                .message(e.getMessage())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+
+    @ExceptionHandler(WaterMeterDataValidationException.class)
+    public ResponseEntity<ErrorResponse> handleWaterMeterDataValidationException(WaterMeterDataValidationException e) {
+        log.error("Watermeter data validation error", e);
+
+        ErrorResponse response = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error("WaterMeter Data Validation Error")
+                .message(e.getMessage())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+
+    @ExceptionHandler(CoordinatesNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleCoordinatesNotFoundException(CoordinatesNotFoundException e) {
+        log.error("Coordinates not found error", e);
+
+        ErrorResponse response = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .error("Coordinates Not Found Error")
+                .message(e.getMessage())
                 .build();
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
