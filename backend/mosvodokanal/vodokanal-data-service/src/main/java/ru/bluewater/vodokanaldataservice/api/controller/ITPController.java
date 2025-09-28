@@ -13,6 +13,7 @@ import ru.bluewater.vodokanaldataservice.api.dto.request.ITPCreateRequest;
 import ru.bluewater.vodokanaldataservice.api.dto.request.ITPUpdateRequest;
 import ru.bluewater.vodokanaldataservice.api.dto.response.ITPDetailResponse;
 import ru.bluewater.vodokanaldataservice.api.dto.response.ITPResponse;
+import ru.bluewater.vodokanaldataservice.api.exception.CoordinatesNotFoundException;
 import ru.bluewater.vodokanaldataservice.service.ITPService;
 
 import java.util.UUID;
@@ -49,7 +50,7 @@ public class ITPController {
     }
 
     @PostMapping
-    public ResponseEntity<ITPResponse> createITP(@Valid @RequestBody ITPCreateRequest request) {
+    public ResponseEntity<ITPResponse> createITP(@Valid @RequestBody ITPCreateRequest request) throws CoordinatesNotFoundException {
         return ResponseEntity.status(HttpStatus.CREATED).body(itpService.create(request));
     }
 

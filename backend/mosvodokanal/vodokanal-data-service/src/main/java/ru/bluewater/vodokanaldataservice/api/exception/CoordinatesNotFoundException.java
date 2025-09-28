@@ -1,4 +1,4 @@
-package ru.bluewater.itpdataanalyzing.exception;
+package ru.bluewater.vodokanaldataservice.api.exception;
 
 public class CoordinatesNotFoundException extends Exception {
     public CoordinatesNotFoundException() {

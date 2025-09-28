@@ -36,6 +36,10 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
+  servlet:
+    multipart:
+      max-file-size: 100MB
+
 server:
   port: 8080
 
@@ -58,3 +62,6 @@ app:
   kafka:
     topic:
       input: processed-itp-data
+
+itp-data-processing:
+  url: http://localhost:8082

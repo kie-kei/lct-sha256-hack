@@ -1,4 +1,4 @@
-package ru.bluewater.itpdataanalyzing.export;
+package ru.bluewater.itpdataprocessing.export;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -12,6 +12,4 @@ public class MKDCreateRequest {
     private String fias;
     @NotBlank
     private String unom;
-    private BigDecimal latitude;
-    private BigDecimal longitude;
 }

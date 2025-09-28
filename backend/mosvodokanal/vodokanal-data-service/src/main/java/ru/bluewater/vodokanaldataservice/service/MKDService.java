@@ -6,9 +6,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.bluewater.vodokanaldataservice.api.client.ItpDataProcessingClient;
 import ru.bluewater.vodokanaldataservice.api.dto.request.MKDCreateRequest;
 import ru.bluewater.vodokanaldataservice.api.dto.request.MKDUpdateRequest;
 import ru.bluewater.vodokanaldataservice.api.dto.response.MKDResponse;
+import ru.bluewater.vodokanaldataservice.api.dto.response.NominatimResponse;
+import ru.bluewater.vodokanaldataservice.api.exception.CoordinatesNotFoundException;
 import ru.bluewater.vodokanaldataservice.entity.ITPEntity;
 import ru.bluewater.vodokanaldataservice.entity.MKDEntity;
 import ru.bluewater.vodokanaldataservice.api.exception.BusinessException;
@@ -29,6 +32,7 @@ public class MKDService {
     private final MKDRepository mkdRepository;
     private final ITPRepository itpRepository;
     private final MKDMapper mkdMapper;
+    private final ItpDataProcessingClient itpDataProcessingClient;
 
     public Page<MKDResponse> findAll(Pageable pageable) {
         log.debug("Getting all MKDs with pagination: {}", pageable);
@@ -63,7 +67,7 @@ public class MKDService {
     }
 
     @Transactional
-    public MKDResponse create(UUID itpId, MKDCreateRequest request) {
+    public MKDResponse create(UUID itpId, MKDCreateRequest request) throws CoordinatesNotFoundException {
         log.debug("Creating MKD for ITP id: {}", itpId);
 
         ITPEntity itp = itpRepository.findById(itpId)
@@ -78,6 +82,12 @@ public class MKDService {
         }
 
         MKDEntity entity = mkdMapper.toEntity(request);
+
+        NominatimResponse response = itpDataProcessingClient.getCoordinatesByAddress(request.getAddress());
+
+        entity.setLongitude(BigDecimal.valueOf(Double.parseDouble(response.getLon())));
+        entity.setLatitude(BigDecimal.valueOf(Double.parseDouble(response.getLat())));
+
         entity.setItp(itp);
 
         entity = mkdRepository.save(entity);
@@ -87,7 +97,7 @@ public class MKDService {
     }
 
     @Transactional
-    public MKDResponse update(UUID id, MKDUpdateRequest request) {
+    public MKDResponse update(UUID id, MKDUpdateRequest request) throws CoordinatesNotFoundException {
         log.debug("Updating MKD with id: {}", id);
 
         MKDEntity entity = mkdRepository.findById(id)
@@ -107,7 +117,16 @@ public class MKDService {
             throw new BusinessException("MKD already exists with UNOM: " + request.getUnom());
         }
 
+        String oldAddress = entity.getAddress();
+
         mkdMapper.updateEntity(entity, request);
+
+        if (!oldAddress.equals(entity.getAddress())) {
+            NominatimResponse response = itpDataProcessingClient.getCoordinatesByAddress(entity.getAddress());
+
+            entity.setLongitude(BigDecimal.valueOf(Double.parseDouble(response.getLon())));
+            entity.setLatitude(BigDecimal.valueOf(Double.parseDouble(response.getLat())));
+        }
         entity = mkdRepository.save(entity);
 
         log.debug("Updated MKD with id: {}", id);

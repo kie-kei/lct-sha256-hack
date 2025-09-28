@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.bluewater.vodokanaldataservice.api.dto.request.MKDCreateRequest;
 import ru.bluewater.vodokanaldataservice.api.dto.request.MKDUpdateRequest;
 import ru.bluewater.vodokanaldataservice.api.dto.response.MKDResponse;
+import ru.bluewater.vodokanaldataservice.api.exception.CoordinatesNotFoundException;
 import ru.bluewater.vodokanaldataservice.service.MKDService;
 
 import java.math.BigDecimal;
@@ -60,14 +61,14 @@ public class MKDController {
     @PostMapping("/itp/{itpId}")
     public ResponseEntity<MKDResponse> createMKD(
             @PathVariable UUID itpId,
-            @Valid @RequestBody MKDCreateRequest request) {
+            @Valid @RequestBody MKDCreateRequest request) throws CoordinatesNotFoundException {
         return ResponseEntity.status(HttpStatus.CREATED).body(mkdService.create(itpId, request));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<MKDResponse> updateMKD(
             @PathVariable UUID id,
-            @Valid @RequestBody MKDUpdateRequest request) {
+            @Valid @RequestBody MKDUpdateRequest request) throws CoordinatesNotFoundException {
         return ResponseEntity.ok(mkdService.update(id, request));
     }
 

@@ -13,5 +13,7 @@ public class ODPUGVSDeviceDto {
     @NotNull
     private UUID secondChannelFlowmeterIdentifier;
     @NotNull
-    private Integer flowValue;
+    private Float firstChannelFlowValue;
+    @NotNull
+    private Float secondChannelFlowValue;
 }
