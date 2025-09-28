@@ -27,14 +27,12 @@ public class MKDController {
     private final MKDService mkdService;
 
     @GetMapping
-    public ResponseEntity<List<MKDResponse>> getAllMKDs() {
-        return ResponseEntity.ok(mkdService.findAll());
-    }
-
-    @GetMapping
-    public ResponseEntity<Page<MKDResponse>> getAllMKDs(
-            @PageableDefault(size = 20) Pageable pageable) {
-        return ResponseEntity.ok(mkdService.findAll(pageable));
+    public ResponseEntity<?> getAllMKDs(@PageableDefault(size = 20) Pageable pageable) {
+        if (pageable.isPaged()) {
+            return ResponseEntity.ok(mkdService.findAll(pageable));
+        } else {
+            return ResponseEntity.ok(mkdService.findAll());
+        }
     }
 
     @GetMapping("/{id}")

@@ -11,6 +11,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface MKDMapper {
     @Mapping(source = "itp.id", target = "itpId")
+    @Mapping(source = "district.name", target = "district")
     MKDResponse toResponse(MKDEntity entity);
 
     List<MKDResponse> toResponseList(List<MKDEntity> entities);

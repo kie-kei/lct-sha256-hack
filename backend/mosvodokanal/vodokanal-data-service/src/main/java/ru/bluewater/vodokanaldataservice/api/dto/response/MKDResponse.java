@@ -16,4 +16,5 @@ public class MKDResponse {
     private UUID itpId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String district;
 }

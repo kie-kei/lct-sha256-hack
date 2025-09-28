@@ -17,4 +17,5 @@ public class MKDMessage {
     private String unom; // УНОМ
     private BigDecimal latitude;
     private BigDecimal longitude;
+    private String district;
 }

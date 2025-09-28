@@ -1,9 +1,0 @@
-package ru.bluewater.itpdataprocessing.api.dto.response;
-
-import lombok.Getter;
-
-@Getter
-public class NominatimResponse {
-    private String lat;
-    private String lon;
-}

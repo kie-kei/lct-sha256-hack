@@ -16,6 +16,7 @@ import ru.bluewater.vodokanaldataservice.api.dto.response.ITPResponse;
 import ru.bluewater.vodokanaldataservice.api.exception.CoordinatesNotFoundException;
 import ru.bluewater.vodokanaldataservice.service.ITPService;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -47,6 +48,13 @@ public class ITPController {
             @RequestParam String number,
             @PageableDefault(size = 20) Pageable pageable) {
         return ResponseEntity.ok(itpService.findByNumberContaining(number, pageable));
+    }
+
+    @GetMapping("/by-district")
+    public ResponseEntity<Page<ITPResponse>> getAllITPsByDistrictName(
+            @RequestParam("district") String district,
+            @PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(itpService.findAllItpByDistrict(district, pageable));
     }
 
     @PostMapping
