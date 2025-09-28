@@ -9,5 +9,5 @@ public class WaterMeterXVSITPDto {
     @NotNull
     private UUID identifier;
     @NotNull
-    private Integer flowValue;
+    private Float flowValue;
 }
