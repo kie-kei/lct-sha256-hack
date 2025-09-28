@@ -6,10 +6,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.bluewater.vodokanaldataservice.api.client.ItpDataProcessingClient;
 import ru.bluewater.vodokanaldataservice.api.dto.request.ITPCreateRequest;
 import ru.bluewater.vodokanaldataservice.api.dto.request.ITPUpdateRequest;
 import ru.bluewater.vodokanaldataservice.api.dto.response.ITPDetailResponse;
 import ru.bluewater.vodokanaldataservice.api.dto.response.ITPResponse;
+import ru.bluewater.vodokanaldataservice.api.dto.response.NominatimResponse;
+import ru.bluewater.vodokanaldataservice.api.exception.CoordinatesNotFoundException;
 import ru.bluewater.vodokanaldataservice.entity.ITPEntity;
 import ru.bluewater.vodokanaldataservice.api.exception.BusinessException;
 import ru.bluewater.vodokanaldataservice.api.exception.ResourceNotFoundException;
@@ -17,6 +20,7 @@ import ru.bluewater.vodokanaldataservice.mapper.ITPMapper;
 import ru.bluewater.vodokanaldataservice.mapper.MKDMapper;
 import ru.bluewater.vodokanaldataservice.repository.ITPRepository;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Service
@@ -27,6 +31,7 @@ public class ITPService {
     private final ITPRepository itpRepository;
     private final ITPMapper itpMapper;
     private final MKDMapper mkdMapper;
+    private final ItpDataProcessingClient itpDataProcessingClient;
 
     public Page<ITPResponse> findAll(Pageable pageable) {
         log.debug("Getting all ITPs with pagination: {}", pageable);
@@ -55,7 +60,7 @@ public class ITPService {
     }
 
     @Transactional
-    public ITPResponse create(ITPCreateRequest request) {
+    public ITPResponse create(ITPCreateRequest request) throws CoordinatesNotFoundException {
         log.debug("Creating ITP with id: {}", request.getId());
 
         if (itpRepository.existsById(request.getId())) {
@@ -71,6 +76,11 @@ public class ITPService {
         // Если есть данные МКД, создаем их
         if (request.getMkd() != null) {
             entity.setMkd(mkdMapper.toEntity(request.getMkd()));
+
+            NominatimResponse response = itpDataProcessingClient.getCoordinatesByAddress(request.getMkd().getAddress());
+
+            entity.getMkd().setLongitude(BigDecimal.valueOf(Double.parseDouble(response.getLon())));
+            entity.getMkd().setLatitude(BigDecimal.valueOf(Double.parseDouble(response.getLat())));
             entity.getMkd().setItp(entity);
         }
 

@@ -1,4 +1,4 @@
-package ru.bluewater.itpdataprocessing.exception;
+package ru.bluewater.itpdataprocessing.api.exception;
 
 public class NominatimServiceUnavailableException extends Exception {
     public NominatimServiceUnavailableException() {
