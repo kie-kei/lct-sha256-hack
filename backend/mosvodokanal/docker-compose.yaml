@@ -1,0 +1,18 @@
+services:
+  external-data-consumer:
+    image: external-data-consumer:latest
+    build:
+      context: .
+      dockerfile: external-data-consumer/Dockerfile
+
+  itp-data-processing:
+    image: itp-data-processing:latest
+    build:
+      context: .
+      dockerfile: itp-data-processing/Dockerfile
+
+  vodokanal-data-service:
+    image: vodokanal-data-service:latest
+    build:
+      context: .
+      dockerfile: vodokanal-data-service/Dockerfile

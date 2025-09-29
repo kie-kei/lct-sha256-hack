@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: external-data-consumer
+  kafka:
+    bootstrap-servers: localhost:9092
+
+server:
+  port: 8081
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus,info,kafka
+
+logging:
+  level:
+    root: info
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+app:
+  kafka:
+    topic:
+      output: external-itp-data
