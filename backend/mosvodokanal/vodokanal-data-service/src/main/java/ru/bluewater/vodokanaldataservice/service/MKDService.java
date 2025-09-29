@@ -6,12 +6,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.bluewater.vodokanaldataservice.api.client.ItpDataProcessingClient;
+import ru.bluewater.integration.response.NominatimResponse;
+import ru.bluewater.vodokanaldataservice.client.ItpDataProcessingClient;
 import ru.bluewater.vodokanaldataservice.api.dto.request.MKDCreateRequest;
 import ru.bluewater.vodokanaldataservice.api.dto.request.MKDUpdateRequest;
 import ru.bluewater.vodokanaldataservice.api.dto.response.MKDResponse;
-import ru.bluewater.vodokanaldataservice.api.dto.response.NominatimResponse;
 import ru.bluewater.vodokanaldataservice.api.exception.CoordinatesNotFoundException;
+import ru.bluewater.vodokanaldataservice.entity.DistrictEntity;
 import ru.bluewater.vodokanaldataservice.entity.ITPEntity;
 import ru.bluewater.vodokanaldataservice.entity.MKDEntity;
 import ru.bluewater.vodokanaldataservice.api.exception.BusinessException;
@@ -33,6 +34,14 @@ public class MKDService {
     private final ITPRepository itpRepository;
     private final MKDMapper mkdMapper;
     private final ItpDataProcessingClient itpDataProcessingClient;
+    private final DistrictService districtService;
+
+    public List<MKDResponse> findAll() {
+        log.debug("Getting all MKDs without pagination");
+        return mkdRepository.findAll().stream()
+                .map(mkdMapper::toResponse)
+                .toList();
+    }
 
     public Page<MKDResponse> findAll(Pageable pageable) {
         log.debug("Getting all MKDs with pagination: {}", pageable);
@@ -90,6 +99,9 @@ public class MKDService {
 
         entity.setItp(itp);
 
+        DistrictEntity district = districtService.getOrCreateDistrict(response.getAddress().getSuburb());
+        entity.setDistrict(district);
+
         entity = mkdRepository.save(entity);
         log.debug("Created MKD with id: {}", entity.getId());
 
@@ -126,6 +138,8 @@ public class MKDService {
 
             entity.setLongitude(BigDecimal.valueOf(Double.parseDouble(response.getLon())));
             entity.setLatitude(BigDecimal.valueOf(Double.parseDouble(response.getLat())));
+            DistrictEntity district = districtService.getOrCreateDistrict(response.getAddress().getSuburb());
+            entity.setDistrict(district);
         }
         entity = mkdRepository.save(entity);
 

@@ -27,9 +27,12 @@ public class MKDController {
     private final MKDService mkdService;
 
     @GetMapping
-    public ResponseEntity<Page<MKDResponse>> getAllMKDs(
-            @PageableDefault(size = 20) Pageable pageable) {
-        return ResponseEntity.ok(mkdService.findAll(pageable));
+    public ResponseEntity<?> getAllMKDs(@PageableDefault(size = 20) Pageable pageable) {
+        if (pageable.isPaged()) {
+            return ResponseEntity.ok(mkdService.findAll(pageable));
+        } else {
+            return ResponseEntity.ok(mkdService.findAll());
+        }
     }
 
     @GetMapping("/{id}")
@@ -46,7 +49,7 @@ public class MKDController {
     public ResponseEntity<Page<MKDResponse>> searchMKDs(
             @RequestParam String address,
             @PageableDefault(size = 20) Pageable pageable) {
-        log.info("GET /api/v1/mkd/search?address={} - Searching MKDs", address);
+        log.debug("GET /api/v1/mkd/search?address={} - Searching MKDs", address);
         return ResponseEntity.ok(mkdService.findByAddressContaining(address, pageable));
     }
 
