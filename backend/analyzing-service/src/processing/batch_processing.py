@@ -30,18 +30,23 @@ class BatchProcessor:
         
         try:
             # Валидация всех сообщений
+            valid_messages = []
             for i, msg in enumerate(messages):
-                if not msg.validate():
+                if msg.validate():
+                    valid_messages.append(msg)
+                else:
                     logger.error(f"Invalid message {i} in batch for ITP {itp_id}")
-                    continue
             
-            # 1. Получаем данные из REST API
-            external_data = await self.rest_client.get_itp_data(itp_id)
-            water_meter_data = await self.rest_client.get_water_meter_data(itp_id)
+            if not valid_messages:
+                logger.warning(f"No valid messages in batch for ITP {itp_id}")
+                return
+            
+            # 1. Получаем средние значения расходов из REST API
+            average_flows_data = await self._fetch_average_flows(itp_id, valid_messages)
             
             # 2. Pre-Analysis (математический анализ)
             pre_analysis_result = await self.pre_analysis.analyze(
-                itp_id, messages, {**external_data, **water_meter_data}
+                itp_id, valid_messages, average_flows_data
             )
             
             # 3. Проверяем условие и отправляем в Kafka если нужно
@@ -50,7 +55,7 @@ class BatchProcessor:
                 await self.kafka_producer.send_message(itp_id, message)
             
             # 4. Параллельные предсказания через модели
-            prediction_results = await self.prediction_pipeline.process_batch(itp_id, messages)
+            prediction_results = await self.prediction_pipeline.process_batch(itp_id, valid_messages)
             
             # 5. Post-Analysis (математический анализ результатов предсказания)
             post_analysis_result = await self.post_analysis.analyze(itp_id, prediction_results)
@@ -65,3 +70,39 @@ class BatchProcessor:
         except Exception as e:
             logger.error(f"Error processing batch for ITP {itp_id}: {e}")
             raise
+
+    async def _fetch_average_flows(self, itp_id: str, messages: List[ITPDataMessage]) -> Dict[str, Any]:
+        """Получает средние значения расходов"""
+        try:
+            # Конвертируем ITP ID в int
+            itp_id_int = int(itp_id) if itp_id.isdigit() else int(messages[0].itp.id)
+            
+            # Определяем период и час из первого сообщения батча
+            first_message = messages[0]
+            period = int(first_message.timestamp.timestamp())  # Unix timestamp
+            hour = first_message.timestamp.hour
+            
+            logger.debug(f"Fetching average flows for ITP {itp_id_int}, period {period}, hour {hour}")
+            
+            # Получаем данные
+            average_flows = await self.rest_client.get_average_flows(itp_id_int, period, hour)
+            
+            return {
+                'average_flows': average_flows,
+                'period': period,
+                'hour': hour,
+                'itp_id_int': itp_id_int
+            }
+            
+        except Exception as e:
+            logger.error(f"Error fetching average flows for ITP {itp_id}: {e}")
+            return {
+                'average_flows': {
+                    'avg_hvs_flow': 0.0,
+                    'avg_gvs_first_channel_flow': 0.0,
+                    'avg_gvs_second_channel_flow': 0.0
+                },
+                'period': None,
+                'hour': None,
+                'itp_id_int': None
+            }
