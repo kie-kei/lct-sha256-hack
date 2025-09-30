@@ -1,11 +1,10 @@
-package ru.bluewater.vodokanaldataservice.api.dto.response;
+package ru.bluewater.integration.response;
 
 import lombok.Getter;
-
-import java.math.BigDecimal;
 
 @Getter
 public class NominatimResponse {
     private String lat;
     private String lon;
+    private NominatimAddressResponse address;
 }

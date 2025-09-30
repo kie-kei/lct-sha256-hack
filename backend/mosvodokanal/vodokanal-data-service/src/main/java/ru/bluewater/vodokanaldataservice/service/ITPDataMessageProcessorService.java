@@ -7,11 +7,13 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.bluewater.integration.message.ITPDataMessage;
 import ru.bluewater.integration.message.ODPUGVSDeviceMessage;
 import ru.bluewater.integration.message.WaterMeterXVSITPMessage;
+import ru.bluewater.vodokanaldataservice.entity.DistrictEntity;
 import ru.bluewater.vodokanaldataservice.entity.ITPEntity;
 import ru.bluewater.vodokanaldataservice.entity.MKDEntity;
 import ru.bluewater.vodokanaldataservice.entity.WaterMeterDataEntity;
 import ru.bluewater.vodokanaldataservice.api.exception.BusinessException;
 import ru.bluewater.vodokanaldataservice.mapper.ITPMessageMapper;
+import ru.bluewater.vodokanaldataservice.repository.DistrictRepository;
 import ru.bluewater.vodokanaldataservice.repository.ITPRepository;
 import ru.bluewater.vodokanaldataservice.repository.MKDRepository;
 import ru.bluewater.vodokanaldataservice.repository.WaterMeterDataRepository;
@@ -29,6 +31,7 @@ public class ITPDataMessageProcessorService {
     private final MKDRepository mkdRepository;
     private final WaterMeterDataRepository waterMeterDataRepository;
     private final ITPMessageMapper itpMessageMapper;
+    private final DistrictService districtService;
 
     @Transactional
     public void processITPDataMessage(ITPDataMessage message) {
@@ -81,13 +84,26 @@ public class ITPDataMessageProcessorService {
         return mkdRepository.findByItpId(itpEntity.getId())
                 .map(existingMKD -> {
                     log.debug("MKD already exists for ITP: {}, updating", itpEntity.getId());
+
                     // Обновляем существующий MKD
+                    String oldAddress = existingMKD.getAddress();
                     itpMessageMapper.updateMKDEntity(existingMKD, message.getMkd());
+
+                    if (!oldAddress.equals(message.getMkd().getAddress())) {
+                        DistrictEntity district = districtService.getOrCreateDistrict(message.getMkd().getDistrict());
+
+                        existingMKD.setDistrict(district);
+                    }
+
                     return mkdRepository.save(existingMKD);
                 })
                 .orElseGet(() -> {
                     log.debug("Creating new MKD for ITP: {}", itpEntity.getId());
                     MKDEntity newMKD = itpMessageMapper.toMKDEntity(message.getMkd());
+
+                    DistrictEntity district = districtService.getOrCreateDistrict(message.getMkd().getDistrict());
+
+                    newMKD.setDistrict(district);
                     newMKD.setItp(itpEntity);
                     return mkdRepository.save(newMKD);
                 });

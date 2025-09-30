@@ -36,6 +36,9 @@ public class MKDEntity {
     @OneToOne
     @JoinColumn(name = "itp_id", nullable = false)
     private ITPEntity itp;
+    @ManyToOne
+    @JoinColumn(name = "district_id", nullable = false)
+    private DistrictEntity district;
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;

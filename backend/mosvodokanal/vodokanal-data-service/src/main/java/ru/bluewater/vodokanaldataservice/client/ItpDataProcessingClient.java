@@ -1,12 +1,9 @@
-package ru.bluewater.vodokanaldataservice.api.client;
+package ru.bluewater.vodokanaldataservice.client;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
-import ru.bluewater.vodokanaldataservice.api.dto.response.NominatimResponse;
+import ru.bluewater.integration.response.NominatimResponse;
 import ru.bluewater.vodokanaldataservice.api.exception.CoordinatesNotFoundException;
 
 @Component

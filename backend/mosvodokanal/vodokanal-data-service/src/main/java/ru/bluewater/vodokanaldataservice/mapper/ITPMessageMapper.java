@@ -18,11 +18,13 @@ public interface ITPMessageMapper {
     @Mapping(target = "itp", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "district", ignore = true)
     MKDEntity toMKDEntity(MKDMessage mkdMessage);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "itp", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "district", ignore = true)
     void updateMKDEntity(@MappingTarget MKDEntity entity, MKDMessage mkdMessage);
 }

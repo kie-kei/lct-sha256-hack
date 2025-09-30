@@ -6,6 +6,9 @@ spring:
     virtual:
       enabled: true
 
+  jackson:
+    time-zone: Europe/Samara
+
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
@@ -62,6 +65,7 @@ app:
   kafka:
     topic:
       input: processed-itp-data
+      accidents: predicted-itp-accidents
 
 itp-data-processing:
   url: http://localhost:8082

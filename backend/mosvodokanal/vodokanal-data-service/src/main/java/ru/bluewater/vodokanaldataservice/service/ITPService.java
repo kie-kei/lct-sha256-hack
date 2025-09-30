@@ -6,13 +6,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.bluewater.vodokanaldataservice.api.client.ItpDataProcessingClient;
+import ru.bluewater.integration.response.NominatimResponse;
+import ru.bluewater.vodokanaldataservice.client.ItpDataProcessingClient;
 import ru.bluewater.vodokanaldataservice.api.dto.request.ITPCreateRequest;
 import ru.bluewater.vodokanaldataservice.api.dto.request.ITPUpdateRequest;
 import ru.bluewater.vodokanaldataservice.api.dto.response.ITPDetailResponse;
 import ru.bluewater.vodokanaldataservice.api.dto.response.ITPResponse;
-import ru.bluewater.vodokanaldataservice.api.dto.response.NominatimResponse;
 import ru.bluewater.vodokanaldataservice.api.exception.CoordinatesNotFoundException;
+import ru.bluewater.vodokanaldataservice.entity.DistrictEntity;
 import ru.bluewater.vodokanaldataservice.entity.ITPEntity;
 import ru.bluewater.vodokanaldataservice.api.exception.BusinessException;
 import ru.bluewater.vodokanaldataservice.api.exception.ResourceNotFoundException;
@@ -21,6 +22,8 @@ import ru.bluewater.vodokanaldataservice.mapper.MKDMapper;
 import ru.bluewater.vodokanaldataservice.repository.ITPRepository;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -32,6 +35,7 @@ public class ITPService {
     private final ITPMapper itpMapper;
     private final MKDMapper mkdMapper;
     private final ItpDataProcessingClient itpDataProcessingClient;
+    private final DistrictService districtService;
 
     public Page<ITPResponse> findAll(Pageable pageable) {
         log.debug("Getting all ITPs with pagination: {}", pageable);
@@ -59,6 +63,11 @@ public class ITPService {
                 .map(itpMapper::toResponse);
     }
 
+    public Page<ITPResponse> findAllItpByDistrict(String district, Pageable pageable) {
+        log.debug("Searching ITPs by district: {}", district);
+        return itpRepository.findAllByMkd_District_Name(district, pageable).map(itpMapper::toResponse);
+    }
+
     @Transactional
     public ITPResponse create(ITPCreateRequest request) throws CoordinatesNotFoundException {
         log.debug("Creating ITP with id: {}", request.getId());
@@ -82,6 +91,10 @@ public class ITPService {
             entity.getMkd().setLongitude(BigDecimal.valueOf(Double.parseDouble(response.getLon())));
             entity.getMkd().setLatitude(BigDecimal.valueOf(Double.parseDouble(response.getLat())));
             entity.getMkd().setItp(entity);
+
+            DistrictEntity district = districtService.getOrCreateDistrict(response.getAddress().getSuburb());
+
+            entity.getMkd().setDistrict(district);
         }
 
         entity = itpRepository.save(entity);

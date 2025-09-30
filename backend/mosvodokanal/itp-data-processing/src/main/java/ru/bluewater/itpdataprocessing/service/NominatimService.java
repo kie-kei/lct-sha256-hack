@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import ru.bluewater.itpdataprocessing.api.dto.response.NominatimResponse;
+import ru.bluewater.integration.response.NominatimResponse;
 import ru.bluewater.itpdataprocessing.api.exception.CoordinatesNotFoundException;
 import ru.bluewater.itpdataprocessing.api.exception.NominatimServiceUnavailableException;
 
@@ -23,7 +23,7 @@ public class NominatimService {
 
     public NominatimResponse getCoordinatesByAddress(String address) throws CoordinatesNotFoundException, NominatimServiceUnavailableException {
         try {
-            String url = nominatimUrl + "/search?q=" + address + "&format=json&limit=1";
+            String url = nominatimUrl + "/search?q=" + address + "&format=json&limit=1&addressdetails=1";
 
             NominatimResponse[] response = restTemplate.getForObject(url, NominatimResponse[].class);
 

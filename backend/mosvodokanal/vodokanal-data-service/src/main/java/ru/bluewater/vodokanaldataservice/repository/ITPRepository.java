@@ -1,5 +1,6 @@
 package ru.bluewater.vodokanaldataservice.repository;
 
+import org.apache.poi.sl.draw.geom.GuideIf;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.bluewater.vodokanaldataservice.entity.ITPEntity;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,4 +26,6 @@ public interface ITPRepository extends JpaRepository<ITPEntity, UUID> {
     Page<ITPEntity> findByNumberContainingIgnoreCase(String number, Pageable pageable);
 
     boolean existsByNumber(String number);
+
+    Page<ITPEntity> findAllByMkd_District_Name(String name, Pageable pageable);
 }
