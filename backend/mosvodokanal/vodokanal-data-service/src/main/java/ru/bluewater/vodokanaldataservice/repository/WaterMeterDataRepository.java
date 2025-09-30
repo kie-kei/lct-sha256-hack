@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import ru.bluewater.vodokanaldataservice.entity.WaterMeterDataEntity;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,6 +21,11 @@ public interface WaterMeterDataRepository extends JpaRepository<WaterMeterDataEn
 
     List<WaterMeterDataEntity> findByItpIdAndMeasurementTimestampBetweenOrderByMeasurementTimestampDesc(
             UUID itpId, LocalDateTime startDate, LocalDateTime endDate);
+
+    List<WaterMeterDataEntity> findByItpIdAndMeasurementTimestampBetweenOrderByMeasurementTimestampAsc(
+            UUID itpId, Date startDate, Date endDate);
+
+    List<WaterMeterDataEntity> findAllByMeasurementTimestampBetweenOrderByMeasurementTimestampAsc(Date startDate, Date endDate);
 
     @Query("SELECT w FROM WaterMeterDataEntity w WHERE w.itp.id = :itpId " +
             "AND w.measurementTimestamp = (SELECT MAX(w2.measurementTimestamp) " +
