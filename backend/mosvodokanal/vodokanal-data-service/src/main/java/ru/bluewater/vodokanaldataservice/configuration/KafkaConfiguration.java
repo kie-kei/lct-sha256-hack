@@ -54,7 +54,7 @@ public class KafkaConfiguration {
         factory.setConsumerFactory(itpDataConsumerFactory());
 
         factory.setBatchListener(true);
-        factory.setConcurrency(20);
+        factory.setConcurrency(1);
         factory.getContainerProperties().setListenerTaskExecutor(taskExecutor);
         factory.getContainerProperties().setPollTimeout(3000);
 
@@ -89,7 +89,7 @@ public class KafkaConfiguration {
         factory.setConsumerFactory(accidentConsumerFactory());
 
         factory.setBatchListener(true);
-        factory.setConcurrency(10);
+        factory.setConcurrency(1);
         factory.getContainerProperties().setListenerTaskExecutor(taskExecutor);
 
         return factory;
