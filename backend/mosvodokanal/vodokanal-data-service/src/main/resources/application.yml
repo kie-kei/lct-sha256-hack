@@ -6,6 +6,9 @@ spring:
     virtual:
       enabled: true
 
+  jackson:
+    time-zone: Europe/Samara
+
   kafka:
     bootstrap-servers: localhost:9092
     consumer:

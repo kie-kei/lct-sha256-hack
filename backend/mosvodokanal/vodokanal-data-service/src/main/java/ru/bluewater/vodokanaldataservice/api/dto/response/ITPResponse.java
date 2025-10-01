@@ -8,6 +8,7 @@ import java.util.UUID;
 public class ITPResponse {
     private UUID id;
     private String number;
+    private MKDResponse mkd;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
