@@ -27,6 +27,13 @@ public interface WaterMeterDataRepository extends JpaRepository<WaterMeterDataEn
 
     List<WaterMeterDataEntity> findAllByMeasurementTimestampBetweenOrderByMeasurementTimestampAsc(Date startDate, Date endDate);
 
+    @Query("SELECT w FROM WaterMeterDataEntity w WHERE w.itp.id = :itpId AND w.measurementTimestamp BETWEEN :startDate AND :endDate AND HOUR(w.measurementTimestamp) = :hour ORDER BY w.measurementTimestamp ASC")
+    List<WaterMeterDataEntity> findAllByItpIdAndTimestampForPeriodAndHour(
+            @Param("itpId") UUID itpId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("hour") int hour);
+
     @Query("SELECT w FROM WaterMeterDataEntity w WHERE w.itp.id = :itpId " +
             "AND w.measurementTimestamp = (SELECT MAX(w2.measurementTimestamp) " +
             "FROM WaterMeterDataEntity w2 WHERE w2.itp.id = :itpId)")

@@ -92,6 +92,18 @@ public class WaterMeterDataService {
         return waterMeterDataMapper.toResponseList(entities);
     }
 
+    public List<WaterMeterDataResponse> findAllByItpIdAndTimestampForPeriod(UUID itpId, int days, int hour) {
+        Date endDate = new Date();
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(endDate);
+        calendar.add(Calendar.DAY_OF_YEAR, -days);
+
+        Date startDate = calendar.getTime();
+
+        return waterMeterDataMapper.toResponseList(waterMeterDataRepository.findAllByItpIdAndTimestampForPeriodAndHour(itpId, startDate, endDate, hour));
+    }
+
     public Double getAverageGvsFlowByItpIdAndPeriod(UUID itpId, LocalDateTime startDate, LocalDateTime endDate) {
         log.debug("Getting average GVS flow for ITP id: {} for period: {} to {}", itpId, startDate, endDate);
         validateITPExists(itpId);
