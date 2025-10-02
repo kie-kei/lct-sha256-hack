@@ -56,6 +56,54 @@ services:
     networks:
       - main-network
 
+  itp-data-analyzing:
+    image: analyzing-service:latest
+    ports:
+      - "8084:8084"
+    environment:
+      # Kafka настройки
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      KAFKA_GROUP_ID: itp-data-analyzing-group
+      KAFKA_INPUT_TOPIC: external-itp-data
+      KAFKA_OUTPUT_TOPIC: analyzing-itp-data
+      # REST API настройки для главного сервиса
+      VODOKANAL_BASE_URL: http://vodokanal-data-service:8081
+      REST_TIMEOUT: 30
+      REST_RETRIES: 3
+      # Batch настройки
+      BATCH_SIZE: 5
+      BATCH_TIMEOUT: 30
+      # ML Models настройки
+      FORCE_DOWNLOAD_MODELS: "true"
+      MODEL_MAX_AGE_HOURS: "24"
+      # Python настройки
+      PYTHONPATH: /app
+      PYTHONUNBUFFERED: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      # Logging
+      LOG_LEVEL: INFO
+      LOG_FILE_PATH: /app/logs/analyzing.log
+      ASYNCIO_DEBUG: "0"
+    networks:
+      - app-network
+    restart: "no"
+    healthcheck:
+      test: [ "CMD", "python", "-c", "import asyncio; print('Service is running'); exit(0)" ]
+      interval: 30s
+      timeout: 10s
+      start_period: 120s  # Даем время на скачивание моделей
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
+  volumes:
+    itp-models:
+      driver: local
+    itp-analyzing-logs:
+      driver: local
+
 networks:
   main-network:
     external: true
