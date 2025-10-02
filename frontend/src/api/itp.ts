@@ -34,7 +34,7 @@ export const itpApi = {
     return apiClient.delete(`${BASE_PATH}/${id}`).then(() => undefined);
   },
 
-  getAll(pageable: Pageable): Promise<PageITPResponse> {
+  getAll(pageable?: Pageable): Promise<PageITPResponse> {
     return apiClient
       .get(BASE_PATH, { params: pageable })
       .then((res) => res.data);

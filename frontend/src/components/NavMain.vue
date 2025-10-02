@@ -9,6 +9,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { useRouter } from "vue-router";
+import { useApplicationStore } from "@/store/applicationStore";
 
 defineProps<{
   items: {
@@ -24,8 +25,10 @@ defineProps<{
 }>();
 
 const router = useRouter();
+const application = useApplicationStore();
 const handleMenuClick = (url: string) => {
   router.push(url);
+  application.secondLayer = "";
 };
 </script>
 
