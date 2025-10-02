@@ -1,5 +1,5 @@
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 @dataclass
 class KafkaSettings:
@@ -26,9 +26,10 @@ class LoggingSettings:
 
 @dataclass
 class Settings:
-    kafka: KafkaSettings = KafkaSettings()
-    batch: BatchSettings = BatchSettings()
-    rest: RestSettings = RestSettings()
-    logging: LoggingSettings = LoggingSettings()
+    # Используем default_factory вместо прямых объектов
+    kafka: KafkaSettings = field(default_factory=KafkaSettings)
+    batch: BatchSettings = field(default_factory=BatchSettings)
+    rest: RestSettings = field(default_factory=RestSettings)
+    logging: LoggingSettings = field(default_factory=LoggingSettings)
 
 settings = Settings()
