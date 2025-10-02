@@ -22,7 +22,7 @@ public class AccidentKafkaConsumer {
     @KafkaListener(
             topics = "${app.kafka.topic.accidents}",
             groupId = "${spring.kafka.consumer.group-id}",
-            concurrency = "10"
+            concurrency = "1"
     )
     public void consumeAccidentsBatch(List<ConsumerRecord<String, AccidentMessage>> records) {
         log.debug("Received batch of {} accident records on virtual thread: {}",

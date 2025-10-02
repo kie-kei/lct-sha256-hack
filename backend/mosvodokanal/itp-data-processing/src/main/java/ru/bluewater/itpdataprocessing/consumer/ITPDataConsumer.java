@@ -21,7 +21,7 @@ public class ITPDataConsumer {
     @KafkaListener(
             topics = "${app.kafka.topic.input}",
             groupId = "${spring.kafka.consumer.group-id}",
-            concurrency = "20",
+            concurrency = "1",
             containerFactory = "batchKafkaListenerContainerFactory"
     )
     public void consumeITPDataBatch(List<ConsumerRecord<String, ITPDataMessage>> records) {
