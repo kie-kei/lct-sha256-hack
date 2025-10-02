@@ -29,6 +29,7 @@ class ITPDataKafkaConsumer:
             logger.info("Kafka consumer stopped")
 
     def _deserialize_message(self, data: bytes) -> ITPDataMessage:
+        """Десериализация сообщения в типизированный объект"""
         try:
             # Логируем сырые данные
             raw_text = data.decode('utf-8')
@@ -37,8 +38,8 @@ class ITPDataKafkaConsumer:
             json_data = json.loads(raw_text)
             logger.debug(f"JSON keys: {list(json_data.keys())}")
 
-            # Проверяем наличие обязательных полей
-            required_fields = ['itpMessage', 'mkdMessage', 'timestamp']
+            # Исправляем названия полей согласно реальному JSON
+            required_fields = ['itp', 'mkd', 'timestamp']  # ← исправлено!
             missing_fields = [field for field in required_fields if field not in json_data]
             if missing_fields:
                 raise ValueError(f"Missing required fields: {missing_fields}")
@@ -53,7 +54,7 @@ class ITPDataKafkaConsumer:
 
         except Exception as e:
             logger.error(f"Deserialization error: {e}")
-            logger.error(f"Raw data: {data}")
+            logger.error(f"Raw data preview: {data[:300]}...")
             raise
 
     async def consume_messages(self) -> AsyncGenerator[Tuple[str, ITPDataMessage], None]:
