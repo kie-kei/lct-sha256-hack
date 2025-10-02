@@ -33,7 +33,7 @@ class VodokanalDataServiceClient:
         Returns:
             Dict с полями: avg_hvs_flow, avg_gvs_first_channel_flow, avg_gvs_second_channel_flow
         """
-        url = f"{self.base_url}/api/v1/water-meter-data/average-flows"
+        url = f"{self.base_url}/api/v1/water-meter-data/itp/{itp_id}/period-for-hour-averages"
         
         # Валидация входных данных
         if not (0 <= hour <= 23):
@@ -41,7 +41,7 @@ class VodokanalDataServiceClient:
         
         payload = {
             "itpId": itp_id,
-            "period": period,
+            "days": 365,
             "hour": hour
         }
         
