@@ -1,6 +1,6 @@
 import axios from "axios";
 import type { AxiosInstance } from "axios";
-const API_BASE_URL = "http://192.168.0.105:8083";
+const API_BASE_URL = "https://wedrochers.ru";
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,

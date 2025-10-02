@@ -2,7 +2,7 @@ from typing import List, Dict, Any
 from datetime import datetime, timedelta
 import pickle
 import json
-from ..models.messages import ITPDataMessage
+from models.messages import ITPDataMessage
 import statsmodels
 
 #####

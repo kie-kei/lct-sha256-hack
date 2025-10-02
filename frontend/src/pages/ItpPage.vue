@@ -12,31 +12,6 @@
             <DialogTitle>Создание ИТП и МКД</DialogTitle>
           </DialogHeader>
           <MkdItpForm />
-          <!-- <form @submit="onSubmit" class="h-full">
-            <div class="flex flex-col gap-2">
-              <FormField v-slot="{ componentField }">
-                <FormItem>
-                  <FormLabel>Username</FormLabel>
-                  <FormControl>
-                    <Input placeholder="shadcn" v-bind="componentField" />
-                  </FormControl>
-                  <FormDescription />
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-            </div>
-            <div class="flex flex-col gap-2">
-              <Label>Номер МКД</Label>
-              <Input placeholder="Введите номер МКД" />
-            </div>
-            <div class="flex flex-col gap-2">
-              <Label>Номер МКД</Label>
-              <Input placeholder="Введите номер МКД" />
-            </div>
-          </form> -->
-          <DialogFooter>
-            <Button class="cursor-pointer">Отправить</Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
@@ -61,36 +36,72 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import type { MKDResponse, Pageable, PageITPResponse } from "@/api/types";
+import {
+  type ITPResponse,
+  type MKDResponse,
+  type Pageable,
+  type PageITPResponse,
+} from "@/api/types";
 import { onMounted } from "vue";
 
 import { ref } from "vue";
-import { useItpStore } from "@/store/itpStore";
-import { useMkdStore } from "@/store/mkdStore";
 import ItpTable from "@/components/custom/ItpTable.vue";
 import { computed } from "vue";
 import Input from "@/components/ui/input/Input.vue";
 import { Button } from "@/components/ui/button";
+import { useDebounceFn } from "@vueuse/core";
+import { watch } from "vue";
 
 const pageable = ref<Pageable>({
   page: 0,
   size: 20,
   sort: ["id", "asc"],
 });
-
+const allMkd = ref<MKDResponse[]>([]);
+const allItp = ref<ITPResponse[]>([]);
 const filterNumber = ref<string>("");
 const filterAddress = ref<string>("");
-const itpStore = useItpStore();
-const mkdStore = useMkdStore();
+
+const fetchNumberSearchResults = async () => {
+  const response = await itpApi.search(filterNumber.value, pageable.value);
+  allItp.value = response.content;
+};
+
+const debouncedFetch = useDebounceFn(fetchNumberSearchResults, 300, {
+  maxWait: 1000,
+  // rejectOnCancel: true // если нужно обрабатывать отмену
+});
+
+watch([filterNumber], () => {
+  debouncedFetch();
+});
+
+const fetchAddressSearchResults = async () => {
+  const response = await mkdApi.search(filterAddress.value, pageable.value);
+  const itpPromises = response.content.map((mkd) => {
+    return itpApi.getById(mkd.itpId).catch((err) => {
+      console.warn(`ITP для MKD ${mkd.itpId} не найден`, err);
+      return null;
+    });
+  });
+
+  const itps = (await Promise.all(itpPromises)).filter((x) => x !== null);
+  allItp.value = itps;
+};
+
+const debouncedAddressFetch = useDebounceFn(fetchAddressSearchResults, 300, {
+  maxWait: 1000,
+  // rejectOnCancel: true // если нужно обрабатывать отмену
+});
+
+watch([filterAddress], () => {
+  debouncedAddressFetch();
+});
+
 const data = computed(() => {
-  let d = itpStore.getAll();
-  if (filterNumber !== undefined || filterNumber !== "") {
-    d = d.filter((x) =>
-      x.number.toLowerCase().includes(filterNumber.value.toLowerCase()),
-    );
-  }
-  let mapped = d.map((x) => {
-    const mkd = mkdStore.getAll().find((y) => y.itpId === x.id);
+  const d = allItp.value;
+  const mapped = d.map((x) => {
+    const mkd = allMkd.value.find((y) => y.itpId === x.id);
     return {
       mkdId: mkd?.id || "",
       id: x.id,
@@ -99,44 +110,32 @@ const data = computed(() => {
       unom: mkd?.unom || "",
     };
   });
-  if (filterAddress !== undefined || filterAddress !== "") {
-    mapped = mapped.filter((x) =>
-      x.address.toLowerCase().includes(filterAddress.value.toLowerCase()),
-    );
-  }
   return mapped;
 });
 const itpLoading = ref(false);
 const itpError = ref<string | null>(null);
 const totalItems = ref(0);
 const totalPages = ref(0);
-const fetchedPage = ref<number[]>([]);
 const loadItpList = async () => {
   itpLoading.value = true;
   itpError.value = null;
 
   try {
     const response: PageITPResponse = await itpApi.getAll(pageable.value);
-    if (!fetchedPage.value.includes(pageable.value.page)) {
-      fetchedPage.value.push(pageable.value.page);
-    }
-    itpStore.addMany(response.content);
+    allItp.value = response.content;
     totalPages.value = response.totalPages;
     totalItems.value = response.totalElements;
-    const mkdPromises = itpStore.getAll().map((itp) => {
-      const res = mkdStore.getByItpId(itp.id);
-      console.log("res", res);
-      if (!res) {
-        return mkdApi.getByItpId(itp.id).catch((err) => {
-          console.warn(`MKD для ITP ${itp.id} не найден`, err);
-          return null;
-        });
-      }
-      return res;
+    const mkdPromises = allItp.value.map((itp) => {
+      return mkdApi.getByItpId(itp.id).catch((err) => {
+        console.warn(`MKD для ITP ${itp.id} не найден`, err);
+        return null;
+      });
     });
 
     const mkdResults = await Promise.all(mkdPromises);
-    mkdStore.addMany(mkdResults.filter(Boolean) as MKDResponse[]);
+    (mkdResults.filter(Boolean) as MKDResponse[]).forEach((x) =>
+      allMkd.value.push(x),
+    );
   } catch (err) {
     console.error("Ошибка при загрузке ITP:", err);
     itpError.value = "Не удалось загрузить данные. Попробуйте позже.";

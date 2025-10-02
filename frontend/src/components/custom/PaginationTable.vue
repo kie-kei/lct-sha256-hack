@@ -93,9 +93,10 @@ const emit = defineEmits<{
 const itemsPerPage = ref(props.itemsPerPage ?? 10);
 const currentPage = ref(props.currentPage ?? 1);
 const currentPageData = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage.value;
-  const end = start + itemsPerPage.value;
-  return props.data.slice(start, end);
+  return props.data;
+  // const start = (currentPage.value - 1) * itemsPerPage.value;
+  // const end = start + itemsPerPage.value;
+  // return props.data.slice(start, end);
 });
 
 watch(
@@ -109,7 +110,10 @@ watch(
 );
 
 const handlePageChange = (page: number) => {
-  if (page < 1 || page > props.totalPages) return;
+  if (page < 1 || page > props.totalPages) {
+    console.log("handlePageChange return");
+    return;
+  }
   currentPage.value = page;
   emit("update:page", page);
 };

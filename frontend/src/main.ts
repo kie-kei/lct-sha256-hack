@@ -9,6 +9,16 @@ import { setupRouter } from "./router";
 import { Layers } from "vue3-openlayers";
 const app = createApp(App);
 const pinia = createPinia();
+
+// app.use(pinia);
+// app.use(setupRouter());
+// app.use(OpenLayersMap);
+
+// // app.use(Map);
+
+// // app.use(Sources);
+// app.mount("#app");
+
 keycloak
   .init({
     onLoad: "login-required",

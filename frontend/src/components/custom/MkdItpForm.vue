@@ -44,9 +44,11 @@
         </FormItem>
       </FormField>
     </div>
+    <Button class="cursor-pointer">Отправить</Button>
   </form>
 </template>
 <script setup lang="ts">
+import { toast } from "vue-sonner";
 import { useForm } from "vee-validate";
 import * as z from "zod";
 import { toTypedSchema } from "@vee-validate/zod";
@@ -59,6 +61,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Button } from "../ui/button";
+import { itpApi } from "@/api/itp";
 const formSchema = toTypedSchema(
   z.object({
     number: z.string({ required_error: "Номер ИТП обязателен" }),
@@ -71,6 +75,29 @@ const form = useForm({
   validationSchema: formSchema,
 });
 const onSubmit = form.handleSubmit((values) => {
-  console.log("Form submitted!", values);
+  try {
+    itpApi.create({
+      number: values.number,
+      id: crypto.randomUUID(),
+      mkd: {
+        address: values.address,
+        fias: values.fias,
+        unom: values.unom,
+      },
+    });
+    toast.info("ИТП и МКД созданы", {
+      description:
+        "Создано ИТП с номером: " +
+        values.number +
+        ". И МКД с адресом: " +
+        values.address,
+    });
+    form.setFieldValue("address", "");
+    form.setFieldValue("number", "");
+    form.setFieldValue("fias", "");
+    form.setFieldValue("unom", "");
+  } catch (error) {
+    toast.error("Ошибка создания ИТП и МКД");
+  }
 });
 </script>
