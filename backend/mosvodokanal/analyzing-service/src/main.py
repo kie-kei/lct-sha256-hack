@@ -86,12 +86,25 @@ class ITPDataAnalyzingService:
         async for itp_id, message in self.consumer.consume_messages():
             if not self.running:
                 break
-                
+
+            # Debug: проверяем тип сообщения
+            logger.debug(f"Received message for ITP {itp_id}, type: {type(message)}")
+
+            if isinstance(message, str):
+                logger.error(f"Received string message in main loop for ITP {itp_id}")
+                continue
+
             # Добавляем сообщение в батч
             batch_ready = await self.accumulator.add_message(itp_id, message)
-            
+
             if batch_ready:
                 batch = self.accumulator.get_batch(itp_id)
+
+                # Debug: проверяем типы в батче
+                logger.debug(f"Batch for ITP {itp_id} contains {len(batch)} messages")
+                for i, msg in enumerate(batch):
+                    logger.debug(f"Batch message {i} type: {type(msg)}")
+
                 # Запускаем обработку в фоне
                 asyncio.create_task(self.batch_processor.process_batch(itp_id, batch))
     

@@ -340,19 +340,30 @@ class PredictionPipeline:
             print(f"❌ Ошибка дообучения модели {model_type}: {e}")
             return False
     
-    def process_batch(self, messages: List[ITPDataMessage], forecast_hours: int = 24, retrain_models: bool = True) -> Dict[str, Any]:
+    def process_batch(self, itp_id: str, messages: List[ITPDataMessage],
+                     forecast_hours: int = 24, retrain_models: bool = True) -> Dict[str, Any]:
         """
         Основной метод обработки сообщений и прогнозирования
-        
+
         Args:
-            messages: список входящих сообщений
+            itp_id: идентификатор ITP
+            messages: список входящих сообщений (ДОЛЖНЫ БЫТЬ ITPDataMessage)
             forecast_hours: количество часов для прогноза
             retrain_models: нужно ли дообучать модели на новых данных
-            
-        Returns:
-            Словарь с результатами обработки и прогнозами
         """
+        logger.info(f"Processing batch for ITP {itp_id} with {len(messages)} messages")
+
+        # Debug: проверяем типы входящих сообщений
+        for i, msg in enumerate(messages):
+            if isinstance(msg, str):
+                logger.error(f"Message {i} is string: {msg[:100]}...")
+                raise ValueError(f"Expected ITPDataMessage, got string at index {i}")
+            if not hasattr(msg, 'odpu_gvs_devices'):
+                logger.error(f"Message {i} missing required attributes: {type(msg)}")
+                raise ValueError(f"Invalid message structure at index {i}")
+
         results = {
+            'itp_id': itp_id,
             'processed_messages': len(messages),
             'anomalies_detected': 0,
             'valid_data_count': 0,
@@ -361,22 +372,22 @@ class PredictionPipeline:
             'anomaly_details': [],
             'processing_time': datetime.now()
         }
-        
+
         # 1. Извлекаем данные из сообщений
         current_data_list = self.extract_data_from_messages(messages)
-        
+
         if not current_data_list:
             print("⚠️ Нет данных для обработки")
             return results
-        
+
         print(f"📊 Извлечено {len(current_data_list)} записей данных")
-        
+
         if retrain_models and self.sarimax_models:
             print("🔄 Дообучение моделей на новых данных...")
             for model_type in self.sarimax_models.keys():
                 if self._retrain_model_with_new_data(model_type, current_data_list):
                     results['models_retrained'].append(model_type)
-        
+
         # 5. Выполняем прогнозирование если есть модели
         if self.sarimax_models:
             forecasts = self._generate_forecasts(forecast_hours)
@@ -384,7 +395,7 @@ class PredictionPipeline:
             print(f"📈 Сгенерировано прогнозов: {len(forecasts)}")
         else:
             print("⚠️ Модели не загружены, прогнозирование невозможно")
-        
+
         return results
     
     def _generate_forecasts(self, hours: int, from_date: datetime = None) -> Dict[str, List[Dict[str, Any]]]:

@@ -29,20 +29,31 @@ class ITPDataKafkaConsumer:
             logger.info("Kafka consumer stopped")
 
     def _deserialize_message(self, data: bytes) -> ITPDataMessage:
-        """Десериализация сообщения в типизированный объект"""
         try:
-            json_data = json.loads(data.decode('utf-8'))
-            logger.debug(f"Parsed JSON data keys: {json_data.keys()}")
+            # Логируем сырые данные
+            raw_text = data.decode('utf-8')
+            logger.debug(f"Raw JSON text preview: {raw_text[:200]}...")
+
+            json_data = json.loads(raw_text)
+            logger.debug(f"JSON keys: {list(json_data.keys())}")
+
+            # Проверяем наличие обязательных полей
+            required_fields = ['itpMessage', 'mkdMessage', 'timestamp']
+            missing_fields = [field for field in required_fields if field not in json_data]
+            if missing_fields:
+                raise ValueError(f"Missing required fields: {missing_fields}")
 
             message = ITPDataMessage.from_dict(json_data)
 
             if not message.validate():
                 raise ValueError("Message validation failed")
 
+            logger.debug(f"Successfully created ITPDataMessage with {len(message.odpu_gvs_devices)} GVS devices")
             return message
+
         except Exception as e:
-            logger.error(f"Error deserializing message: {e}")
-            logger.error(f"Raw data preview: {str(data)[:200]}")
+            logger.error(f"Deserialization error: {e}")
+            logger.error(f"Raw data: {data}")
             raise
 
     async def consume_messages(self) -> AsyncGenerator[Tuple[str, ITPDataMessage], None]:
