@@ -10,37 +10,37 @@ import { Layers } from "vue3-openlayers";
 const app = createApp(App);
 const pinia = createPinia();
 
-app.use(pinia);
-app.use(setupRouter());
-app.use(OpenLayersMap);
+// app.use(pinia);
+// app.use(setupRouter());
+// app.use(OpenLayersMap);
 
-// app.use(Map);
+// // app.use(Map);
 
-// app.use(Sources);
-app.mount("#app");
+// // app.use(Sources);
+// app.mount("#app");
 
-// keycloak
-//   .init({
-//     onLoad: "login-required",
-//     pkceMethod: "S256",
-//     checkLoginIframe: false,
-//   })
-//   .then((authenticated) => {
-//     if (authenticated) {
-//       console.log("User authenticated");
-//     } else {
-//       window.location.reload();
-//     }
+keycloak
+  .init({
+    onLoad: "login-required",
+    pkceMethod: "S256",
+    checkLoginIframe: false,
+  })
+  .then((authenticated) => {
+    if (authenticated) {
+      console.log("User authenticated");
+    } else {
+      window.location.reload();
+    }
 
-//     app.use(pinia);
-//     app.use(setupRouter());
-//     app.use(OpenLayersMap);
+    app.use(pinia);
+    app.use(setupRouter());
+    app.use(OpenLayersMap);
 
-//     // app.use(Map);
+    // app.use(Map);
 
-//     // app.use(Sources);
-//     app.mount("#app");
-//   })
-//   .catch((error) => {
-//     console.error("Keycloak initialization failed", error);
-//   });
+    // app.use(Sources);
+    app.mount("#app");
+  })
+  .catch((error) => {
+    console.error("Keycloak initialization failed", error);
+  });
