@@ -13,8 +13,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import ru.bluewater.integration.message.*;
 import ru.bluewater.vodokanaldataservice.api.dto.request.WaterMeterDataCreateRequest;
 import ru.bluewater.vodokanaldataservice.api.dto.request.WaterMeterDataUpdateRequest;
+import ru.bluewater.vodokanaldataservice.api.dto.response.WaterMeterDataAveragesResponse;
 import ru.bluewater.vodokanaldataservice.api.dto.response.WaterMeterDataResponse;
 import ru.bluewater.vodokanaldataservice.api.exception.IncorrectTimeInWaterMeterDataException;
 import ru.bluewater.vodokanaldataservice.api.exception.IncorrectWaterMeterDataFileExtensionException;
@@ -22,6 +24,7 @@ import ru.bluewater.vodokanaldataservice.api.exception.WaterMeterDataValidationE
 import ru.bluewater.vodokanaldataservice.entity.ITPEntity;
 import ru.bluewater.vodokanaldataservice.entity.WaterMeterDataEntity;
 import ru.bluewater.vodokanaldataservice.api.exception.ResourceNotFoundException;
+import ru.bluewater.vodokanaldataservice.export.ReprocessingITPDataExporter;
 import ru.bluewater.vodokanaldataservice.mapper.WaterMeterDataMapper;
 import ru.bluewater.vodokanaldataservice.repository.ITPRepository;
 import ru.bluewater.vodokanaldataservice.repository.WaterMeterDataRepository;
@@ -49,6 +52,7 @@ public class WaterMeterDataService {
     private final FileUtil fileUtil;
     private final ExcelUtil excelUtil;
     private final CsvUtil csvUtil;
+    private final ReprocessingITPDataExporter reprocessingITPDataExporter;
 
     public Page<WaterMeterDataResponse> findAll(Pageable pageable) {
         log.debug("Getting all water meter data with pagination: {}", pageable);
@@ -102,6 +106,18 @@ public class WaterMeterDataService {
         Date startDate = calendar.getTime();
 
         return waterMeterDataMapper.toResponseList(waterMeterDataRepository.findAllByItpIdAndTimestampForPeriodAndHour(itpId, startDate, endDate, hour));
+    }
+
+    public WaterMeterDataAveragesResponse getAveragesByItpIdAndTimestampForPeriod(UUID itpId, int days, int hour) {
+        Date endDate = new Date();
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(endDate);
+        calendar.add(Calendar.DAY_OF_YEAR, -days);
+
+        Date startDate = calendar.getTime();
+
+        return waterMeterDataRepository.getAveragesByItpIdAndTimestampForPeriod(itpId, startDate, endDate, hour);
     }
 
     public Double getAverageGvsFlowByItpIdAndPeriod(UUID itpId, LocalDateTime startDate, LocalDateTime endDate) {
@@ -178,6 +194,10 @@ public class WaterMeterDataService {
         } else {
             throw new IncorrectWaterMeterDataFileExtensionException("Extension of water meter data files must be .csv, .xls or .xlsx");
         }
+
+        itpEntity.getWaterMeterData().addAll(waterMeterDataList);
+
+        reprocessingITPDataExporter.exportITPData(String.valueOf(itpId), mapItpEntityToItpDataMessage(itpEntity));
 
         return waterMeterDataMapper.toResponseList(waterMeterDataRepository.saveAll(waterMeterDataList));
     }
@@ -294,5 +314,51 @@ public class WaterMeterDataService {
         }
 
         return waterMeterDataList;
+    }
+
+    private ITPDataMessage mapItpEntityToItpDataMessage(ITPEntity itpEntity) {
+        ITPDataMessage itpDataMessage = new ITPDataMessage();
+
+        ITPMessage itpMessage = ITPMessage.builder()
+                .id(itpEntity.getId())
+                .number(itpEntity.getNumber())
+                .build();
+
+        MKDMessage mkdMessage = MKDMessage.builder()
+                .district(itpEntity.getMkd().getDistrict().getName())
+                .address(itpEntity.getMkd().getAddress())
+                .fias(itpEntity.getMkd().getFias())
+                .unom(itpEntity.getMkd().getUnom())
+                .latitude(itpEntity.getMkd().getLatitude())
+                .longitude(itpEntity.getMkd().getLongitude())
+                .build();
+
+        List<ODPUGVSDeviceMessage> odpugvsDeviceMessages = new ArrayList<>();
+        List<WaterMeterXVSITPMessage> waterMeterXVSITPMessages = new ArrayList<>();
+
+        for (WaterMeterDataEntity waterMeterData : itpEntity.getWaterMeterData()) {
+            ODPUGVSDeviceMessage odpugvsDeviceMessage = ODPUGVSDeviceMessage.builder()
+                    .firstChannelFlowmeterIdentifier(waterMeterData.getFirstChannelFlowmeterIdentifier())
+                    .secondChannelFlowmeterIdentifier(waterMeterData.getSecondChannelFlowmeterIdentifier())
+                    .heatMeterIdentifier(waterMeterData.getHeatMeterIdentifier())
+                    .firstChannelFlowValue(waterMeterData.getGvsFirstChannelFlowValue())
+                    .secondChannelFlowValue(waterMeterData.getGvsSecondChannelFlowValue())
+                    .build();
+
+            WaterMeterXVSITPMessage waterMeterXVSITPMessage = WaterMeterXVSITPMessage.builder()
+                    .identifier(waterMeterData.getWaterMeterIdentifier())
+                    .flowValue(waterMeterData.getHvsFlowValue())
+                    .build();
+
+            odpugvsDeviceMessages.add(odpugvsDeviceMessage);
+            waterMeterXVSITPMessages.add(waterMeterXVSITPMessage);
+        }
+
+        itpDataMessage.setItp(itpMessage);
+        itpDataMessage.setMkd(mkdMessage);
+        itpDataMessage.setOdpuGvsDevices(odpugvsDeviceMessages);
+        itpDataMessage.setWaterMeters(waterMeterXVSITPMessages);
+
+        return itpDataMessage;
     }
 }

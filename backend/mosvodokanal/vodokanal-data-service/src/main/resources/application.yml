@@ -66,6 +66,7 @@ app:
     topic:
       input: processed-itp-data
       accidents: predicted-itp-accidents
+      output: external-itp-data
 
 itp-data-processing:
   url: http://localhost:8082

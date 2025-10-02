@@ -31,11 +31,13 @@ public class ITPDataService {
             throw new InvalidAddressException();
         }
 
-        NominatimResponse response = nominatimService.getCoordinatesByAddress(address);
+        if (itpDataMessage.getMkd().getLongitude() == null && itpDataMessage.getMkd().getLatitude() == null) {
+            NominatimResponse response = nominatimService.getCoordinatesByAddress(address);
 
-        itpDataMessage.getMkd().setLongitude(numberUtil.convertStringToBigDecimal(response.getLon()));
-        itpDataMessage.getMkd().setLatitude(numberUtil.convertStringToBigDecimal(response.getLat()));
-        itpDataMessage.getMkd().setDistrict(response.getAddress().getSuburb());
+            itpDataMessage.getMkd().setLongitude(numberUtil.convertStringToBigDecimal(response.getLon()));
+            itpDataMessage.getMkd().setLatitude(numberUtil.convertStringToBigDecimal(response.getLat()));
+            itpDataMessage.getMkd().setDistrict(response.getAddress().getSuburb());
+        }
 
         processedITPDataExporter.exportITPData(itpId, itpDataMessage);
     }
