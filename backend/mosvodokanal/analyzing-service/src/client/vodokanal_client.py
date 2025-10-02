@@ -49,7 +49,7 @@ class VodokanalDataServiceClient:
 
         for attempt in range(self.retries + 1):
             try:
-                async with self.session.post(url, json=payload) as response:
+                async with self.session.get(url, json=payload) as response:
                     if response.status == 200:
                         data = await response.json()
                         logger.debug(f"Successfully fetched average flows for ITP: {itp_id}")
