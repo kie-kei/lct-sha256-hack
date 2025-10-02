@@ -95,6 +95,14 @@ const currentPage = ref(props.currentPage ?? 1);
 const currentPageData = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage.value;
   const end = start + itemsPerPage.value;
+  console.log("Start", start);
+  console.log("end", end);
+  console.log("props.data", props.data);
+  console.log("props.data.length", props.data.length);
+  if (props.data.length < end) {
+    console.log("if", start - itemsPerPage.value, start);
+    return props.data.slice(start - itemsPerPage.value, start);
+  }
   return props.data.slice(start, end);
 });
 
@@ -109,7 +117,10 @@ watch(
 );
 
 const handlePageChange = (page: number) => {
-  if (page < 1 || page > props.totalPages) return;
+  if (page < 1 || page > props.totalPages) {
+    console.log("handlePageChange return");
+    return;
+  }
   currentPage.value = page;
   emit("update:page", page);
 };

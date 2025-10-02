@@ -39,6 +39,24 @@ const routes: RouteRecordRaw[] = [
           backPath: "/itp",
         },
       },
+      {
+        path: "/accidents",
+        name: "accidents",
+        component: () => import("@/pages/AccidentPage.vue"),
+        meta: {
+          breadcrumb: "Аварии",
+          backPath: "/accidents",
+        },
+      },
+      {
+        path: "/statistics",
+        name: "statistics",
+        component: () => import("@/pages/StatisticsDashboard.vue"),
+        meta: {
+          breadcrumb: "Статистика",
+          backPath: "/statistics",
+        },
+      },
     ],
   },
 ];

@@ -35,6 +35,16 @@ const data = {
       url: "/itp",
       icon: Building2,
     },
+    {
+      title: "Аварии",
+      url: "/accidents",
+      icon: Building2,
+    },
+    {
+      title: "Статистика",
+      url: "/statistics",
+      icon: Building2,
+    },
   ],
 };
 </script>
