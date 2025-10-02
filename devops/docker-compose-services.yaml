@@ -85,7 +85,7 @@ services:
       LOG_FILE_PATH: /app/logs/analyzing.log
       ASYNCIO_DEBUG: "0"
     networks:
-      - app-network
+      - main-network
     restart: "no"
     healthcheck:
       test: [ "CMD", "python", "-c", "import asyncio; print('Service is running'); exit(0)" ]
