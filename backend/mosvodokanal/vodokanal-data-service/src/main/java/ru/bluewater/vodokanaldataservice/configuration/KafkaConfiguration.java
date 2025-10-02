@@ -112,7 +112,7 @@ public class KafkaConfiguration {
         props.put(ProducerConfig.BATCH_SIZE_CONFIG, 65536); // 64KB
         props.put(ProducerConfig.LINGER_MS_CONFIG, 5);
         props.put(ProducerConfig.BUFFER_MEMORY_CONFIG, 67108864); // 64MB
-//        props.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "lz4");
+        props.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "snappy");
         props.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 5);
 
         return new DefaultKafkaProducerFactory<>(props);

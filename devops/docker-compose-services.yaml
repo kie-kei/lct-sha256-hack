@@ -67,7 +67,7 @@ services:
       KAFKA_INPUT_TOPIC: external-itp-data
       KAFKA_OUTPUT_TOPIC: analyzing-itp-data
       # REST API настройки для главного сервиса
-      VODOKANAL_BASE_URL: http://vodokanal-data-service:8083
+      VODOKANAL_BASE_URL: http://vodokanal-data-service:8080
       REST_TIMEOUT: 30
       REST_RETRIES: 3
       # Batch настройки
