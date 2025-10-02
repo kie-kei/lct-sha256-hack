@@ -98,11 +98,6 @@ services:
       options:
         max-size: "100m"
         max-file: "3"
-  volumes:
-    itp-models:
-      driver: local
-    itp-analyzing-logs:
-      driver: local
 
 networks:
   main-network:
