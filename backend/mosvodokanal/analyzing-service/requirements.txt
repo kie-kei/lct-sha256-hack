@@ -2,3 +2,4 @@ aiokafka
 aiohttp
 prometheus-client
 statsmodels
+lz4
