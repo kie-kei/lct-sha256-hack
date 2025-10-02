@@ -14,18 +14,17 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Копируем requirements из корня проекта
+# Копируем requirements
 COPY requirements.txt .
 
 # Устанавливаем Python зависимости
 RUN pip install --no-cache-dir --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Копируем весь исходный код (main.py уже внутри src/)
-COPY src/ .
+COPY src .
 
 # Создаем директории
-RUN mkdir -p /app/prediction/models /app/logs
+RUN mkdir -p /app/src/prediction/models /app/logs
 
 # Устанавливаем переменные окружения
 ENV PYTHONPATH=/app
@@ -44,5 +43,5 @@ EXPOSE 8082
 HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=3 \
     CMD python -c "print('OK'); exit(0)" || exit 1
 
-# Запуск приложения (main.py теперь в корне /app)
-CMD ["python", "main.py"]
+# Запуск приложения
+CMD ["python", "src/main.py"]
