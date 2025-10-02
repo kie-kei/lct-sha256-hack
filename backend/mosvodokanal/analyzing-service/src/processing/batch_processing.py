@@ -30,12 +30,7 @@ class BatchProcessor:
         
         try:
             # Валидация всех сообщений
-            valid_messages = []
-            for i, msg in enumerate(messages):
-                if msg.validate():
-                    valid_messages.append(msg)
-                else:
-                    logger.error(f"Invalid message {i} in batch for ITP {itp_id}")
+            valid_messages = [msg for msg in messages if msg.validate()]
             
             if not valid_messages:
                 logger.warning(f"No valid messages in batch for ITP {itp_id}")
@@ -44,26 +39,30 @@ class BatchProcessor:
             # 1. Получаем средние значения расходов из REST API
             average_flows_data = await self._fetch_average_flows(itp_id, valid_messages)
             
-            # 2. Pre-Analysis (математический анализ)
+            # 2. Pre-Analysis (математический анализ каждого сообщения)
             pre_analysis_result = await self.pre_analysis.analyze(
                 itp_id, valid_messages, average_flows_data
             )
             
-            # 3. Проверяем условие и отправляем в Kafka если нужно
+            # 3. Проверяем условие и отправляем AccidentMessage в Kafka если есть аномалии
             if self.condition_checker.check_pre_analysis_condition(pre_analysis_result):
-                message = self.condition_checker.prepare_pre_analysis_message(pre_analysis_result)
-                await self.kafka_producer.send_message(itp_id, message)
+                accident_messages = self.condition_checker.prepare_pre_analysis_message(pre_analysis_result)
+                
+                if accident_messages:  # Если есть сообщения об авариях
+                    await self.kafka_producer.send_accident_messages(itp_id, accident_messages)
             
             # 4. Параллельные предсказания через модели
             prediction_results = await self.prediction_pipeline.process_batch(itp_id, valid_messages)
             
-            # 5. Post-Analysis (математический анализ результатов предсказания)
+            # 5. Post-Analysis (математический анализ каждой точки прогноза)
             post_analysis_result = await self.post_analysis.analyze(itp_id, prediction_results)
             
-            # 6. Проверяем условие и отправляем в Kafka если нужно
+            # 6. Проверяем условие и отправляем AccidentMessage в Kafka если есть аномалии в прогнозах
             if self.condition_checker.check_post_analysis_condition(post_analysis_result):
-                message = self.condition_checker.prepare_post_analysis_message(post_analysis_result)
-                await self.kafka_producer.send_message(itp_id, message)
+                forecast_accident_messages = self.condition_checker.prepare_post_analysis_message(post_analysis_result)
+                
+                if forecast_accident_messages:  # Если есть сообщения об авариях в прогнозах
+                    await self.kafka_producer.send_accident_messages(f"{itp_id}_forecast", forecast_accident_messages)
             
             logger.info(f"Batch processing completed for ITP: {itp_id}")
             

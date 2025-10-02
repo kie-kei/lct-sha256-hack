@@ -20,9 +20,15 @@ class RestSettings:
     retries: int = int(os.getenv('REST_RETRIES', '3'))
 
 @dataclass
+class LoggingSettings:
+    level: str = os.getenv('LOG_LEVEL', 'INFO')
+    file_path: str = os.getenv('LOG_FILE_PATH', '/app/logs/analyzing.log')
+
+@dataclass
 class Settings:
     kafka: KafkaSettings = KafkaSettings()
     batch: BatchSettings = BatchSettings()
     rest: RestSettings = RestSettings()
+    logging: LoggingSettings = LoggingSettings()
 
 settings = Settings()
