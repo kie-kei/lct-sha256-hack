@@ -74,23 +74,23 @@ class BatchProcessor:
         """Получает средние значения расходов"""
         try:
             # Конвертируем ITP ID в int
-            itp_id_int = int(itp_id) if itp_id.isdigit() else int(messages[0].itp.id)
+            itp_id_int = itp_id
             
             # Определяем период и час из первого сообщения батча
             first_message = messages[0]
             period = int(first_message.timestamp.timestamp())  # Unix timestamp
             hour = first_message.timestamp.hour
             
-            logger.debug(f"Fetching average flows for ITP {itp_id_int}, period {period}, hour {hour}")
+            logger.debug(f"Fetching average flows for ITP {itp_id}, period {period}, hour {hour}")
             
             # Получаем данные
-            average_flows = await self.rest_client.get_average_flows(itp_id_int, period, hour)
+            average_flows = await self.rest_client.get_average_flows(itp_id, period, hour)
             
             return {
                 'average_flows': average_flows,
                 'period': period,
                 'hour': hour,
-                'itp_id_int': itp_id_int
+                'itp_id_int': itp_id
             }
             
         except Exception as e:
