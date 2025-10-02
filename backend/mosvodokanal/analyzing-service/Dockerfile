@@ -3,17 +3,6 @@ FROM python:3.11-slim
 # Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Устанавливаем системные зависимости
-RUN apt-get update && apt-get install -y \
-    gcc \
-    g++ \
-    gfortran \
-    libopenblas-dev \
-    liblapack-dev \
-    pkg-config \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
 # Копируем requirements
 COPY requirements.txt .
 
