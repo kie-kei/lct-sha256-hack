@@ -20,5 +20,5 @@ services:
   analyzing-service:
     image: analyzing-service:latest
     build:
-      context: analyzing-service
+      context: .
       dockerfile: analyzing-service/Dockerfile

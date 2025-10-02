@@ -4,13 +4,13 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Копируем requirements
-COPY requirements.txt .
+COPY analyzing-service/requirements.txt .
 
 # Устанавливаем Python зависимости
 RUN pip install --no-cache-dir --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY src/ .
+COPY analyzing-service/src/ .
 
 # Создаем директории
 RUN mkdir -p /app/prediction/models /app/logs
