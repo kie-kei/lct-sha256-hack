@@ -351,15 +351,15 @@ class PredictionPipeline:
             forecast_hours: количество часов для прогноза
             retrain_models: нужно ли дообучать модели на новых данных
         """
-        logger.info(f"Processing batch for ITP {itp_id} with {len(messages)} messages")
+        print(f"Processing batch for ITP {itp_id} with {len(messages)} messages")
 
         # Debug: проверяем типы входящих сообщений
         for i, msg in enumerate(messages):
             if isinstance(msg, str):
-                logger.error(f"Message {i} is string: {msg[:100]}...")
+                print(f"Message {i} is string: {msg[:100]}...")
                 raise ValueError(f"Expected ITPDataMessage, got string at index {i}")
             if not hasattr(msg, 'odpu_gvs_devices'):
-                logger.error(f"Message {i} missing required attributes: {type(msg)}")
+                print(f"Message {i} missing required attributes: {type(msg)}")
                 raise ValueError(f"Invalid message structure at index {i}")
 
         results = {
