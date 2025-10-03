@@ -6,9 +6,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import ru.bluewater.vodokanaldataservice.api.dto.response.WaterMeterDataAveragesResponse;
 import ru.bluewater.vodokanaldataservice.entity.WaterMeterDataEntity;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,6 +22,33 @@ public interface WaterMeterDataRepository extends JpaRepository<WaterMeterDataEn
 
     List<WaterMeterDataEntity> findByItpIdAndMeasurementTimestampBetweenOrderByMeasurementTimestampDesc(
             UUID itpId, LocalDateTime startDate, LocalDateTime endDate);
+
+    List<WaterMeterDataEntity> findByItpIdAndMeasurementTimestampBetweenOrderByMeasurementTimestampAsc(
+            UUID itpId, Date startDate, Date endDate);
+
+    List<WaterMeterDataEntity> findAllByMeasurementTimestampBetweenOrderByMeasurementTimestampAsc(Date startDate, Date endDate);
+
+    @Query("SELECT w FROM WaterMeterDataEntity w WHERE w.itp.id = :itpId AND w.measurementTimestamp BETWEEN :startDate AND :endDate AND HOUR(w.measurementTimestamp) = :hour ORDER BY w.measurementTimestamp ASC")
+    List<WaterMeterDataEntity> findAllByItpIdAndTimestampForPeriodAndHour(
+            @Param("itpId") UUID itpId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("hour") int hour);
+
+    @Query("SELECT NEW ru.bluewater.vodokanaldataservice.api.dto.response.WaterMeterDataAveragesResponse(" +
+            "AVG(w.hvsFlowValue), " +
+            "AVG(w.gvsFirstChannelFlowValue), " +
+            "AVG(w.gvsSecondChannelFlowValue), " +
+            "AVG(w.gvsConsumptionFlowValue)) " +
+            "FROM WaterMeterDataEntity w " +
+            "WHERE w.itp.id = :itpId " +
+            "AND w.measurementTimestamp BETWEEN :startDate AND :endDate " +
+            "AND HOUR(w.measurementTimestamp) = :hour")
+    WaterMeterDataAveragesResponse getAveragesByItpIdAndTimestampForPeriod(
+            @Param("itpId") UUID itpId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("hour") int hour);
 
     @Query("SELECT w FROM WaterMeterDataEntity w WHERE w.itp.id = :itpId " +
             "AND w.measurementTimestamp = (SELECT MAX(w2.measurementTimestamp) " +

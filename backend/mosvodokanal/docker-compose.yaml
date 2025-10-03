@@ -16,3 +16,9 @@ services:
     build:
       context: .
       dockerfile: vodokanal-data-service/Dockerfile
+
+  analyzing-service:
+    image: analyzing-service:latest
+    build:
+      context: .
+      dockerfile: analyzing-service/Dockerfile

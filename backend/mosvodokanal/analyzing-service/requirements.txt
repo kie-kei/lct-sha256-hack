@@ -1,0 +1,4 @@
+aiokafka
+aiohttp
+prometheus-client
+statsmodels

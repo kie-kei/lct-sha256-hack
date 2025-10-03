@@ -19,7 +19,7 @@ public class ITPDataKafkaConsumer {
     @KafkaListener(
             topics = "${app.kafka.topic.input}",
             groupId = "${spring.kafka.consumer.group-id}",
-            concurrency = "20"
+            concurrency = "1"
     )
     public void consumeProcessedITPData(List<ConsumerRecord<String, ITPDataMessage>> records) {
         log.debug("Received batch of {} processed ITP data records on virtual thread: {}",

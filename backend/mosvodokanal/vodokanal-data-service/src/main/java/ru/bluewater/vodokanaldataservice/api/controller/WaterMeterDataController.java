@@ -2,6 +2,8 @@ package ru.bluewater.vodokanaldataservice.api.controller;
 
 import com.opencsv.exceptions.CsvValidationException;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.bluewater.vodokanaldataservice.api.dto.request.WaterMeterDataCreateRequest;
 import ru.bluewater.vodokanaldataservice.api.dto.request.WaterMeterDataUpdateRequest;
+import ru.bluewater.vodokanaldataservice.api.dto.response.WaterMeterDataAveragesResponse;
 import ru.bluewater.vodokanaldataservice.api.dto.response.WaterMeterDataResponse;
 import ru.bluewater.vodokanaldataservice.api.exception.IncorrectTimeInWaterMeterDataException;
 import ru.bluewater.vodokanaldataservice.api.exception.IncorrectWaterMeterDataFileExtensionException;
@@ -54,6 +57,22 @@ public class WaterMeterDataController {
             @PathVariable UUID itpId,
             @PageableDefault(size = 20) Pageable pageable) {
         return ResponseEntity.ok(waterMeterDataService.findByItpIdPaged(itpId, pageable));
+    }
+
+    @GetMapping("/itp/{itpId}/period-for-hour")
+    public ResponseEntity<List<WaterMeterDataResponse>> getAllByItpIdAndHourForPeriod(
+            @PathVariable("itpId") UUID itpId,
+            @RequestParam("days") @Min(0) int days,
+            @RequestParam("hour") @Min(0) @Max(23) int hour) {
+        return ResponseEntity.ok(waterMeterDataService.findAllByItpIdAndTimestampForPeriod(itpId, days, hour));
+    }
+
+    @GetMapping("/itp/{itpId}/period-for-hour-averages")
+    public ResponseEntity<WaterMeterDataAveragesResponse> getAveragesByItpIdAndTimestampForPeriod(
+            @PathVariable("itpId") UUID itpId,
+            @RequestParam("days") @Min(0) int days,
+            @RequestParam("hour") @Min(0) @Max(23) int hour) {
+        return ResponseEntity.ok(waterMeterDataService.getAveragesByItpIdAndTimestampForPeriod(itpId, days, hour));
     }
 
     @GetMapping("/itp/{itpId}/period")
