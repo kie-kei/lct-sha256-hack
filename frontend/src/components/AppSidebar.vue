@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { SidebarProps } from "@/components/ui/sidebar";
 
-import { Building2, Map } from "lucide-vue-next";
+import { Building2, ChartAreaIcon, Map, Siren } from "lucide-vue-next";
 import NavMain from "@/components/NavMain.vue";
 // import NavUser from "@/components/NavUser.vue";
 
@@ -38,12 +38,12 @@ const data = {
     {
       title: "Аварии",
       url: "/accidents",
-      icon: Building2,
+      icon: Siren,
     },
     {
       title: "Статистика",
       url: "/statistics",
-      icon: Building2,
+      icon: ChartAreaIcon,
     },
   ],
 };

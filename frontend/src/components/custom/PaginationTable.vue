@@ -93,17 +93,10 @@ const emit = defineEmits<{
 const itemsPerPage = ref(props.itemsPerPage ?? 10);
 const currentPage = ref(props.currentPage ?? 1);
 const currentPageData = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage.value;
-  const end = start + itemsPerPage.value;
-  console.log("Start", start);
-  console.log("end", end);
-  console.log("props.data", props.data);
-  console.log("props.data.length", props.data.length);
-  if (props.data.length < end) {
-    console.log("if", start - itemsPerPage.value, start);
-    return props.data.slice(start - itemsPerPage.value, start);
-  }
-  return props.data.slice(start, end);
+  return props.data;
+  // const start = (currentPage.value - 1) * itemsPerPage.value;
+  // const end = start + itemsPerPage.value;
+  // return props.data.slice(start, end);
 });
 
 watch(

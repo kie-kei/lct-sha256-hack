@@ -1,10 +1,6 @@
 <template>
   <div class="h-full flex flex-col relative">
-    <MkdMap
-      class="flex-1"
-      @selected="handlePointSelected"
-      :mkd-list="mkdStore.getAll()"
-    />
+    <MkdMap class="flex-1" @selected="handlePointSelected" :mkd-list="allMkd" />
     <!-- <ItpTable
       :itp="allItp"
       :pageable="pageable"
@@ -45,61 +41,45 @@
 import { itpApi } from "@/api/itp";
 import { mkdApi } from "@/api/mkd";
 import { X } from "lucide-vue-next";
-import type { MKDResponse, Pageable, PageITPResponse } from "@/api/types";
 import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardFooter,
-  CardTitle,
-} from "@/components/ui/card";
+  type ITPResponse,
+  type MKDResponse,
+  type Pageable,
+  type PageITPResponse,
+} from "@/api/types";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import MkdMap from "@/components/custom/MkdMap.vue";
-import { computed } from "vue";
 import { onMounted } from "vue";
 import { ref } from "vue";
 import { Button } from "@/components/ui/button";
-import { useItpStore } from "@/store/itpStore";
-import { useMkdStore } from "@/store/mkdStore";
-import ItpTable from "@/components/custom/ItpTable.vue";
 
 const selectedMkdItp = ref<{
-  number: string;
+  number: string | undefined;
   address: string;
   unom: string;
 } | null>();
 
-const handlePointSelected = (ids: string[]) => {
+const handlePointSelected = async (ids: string[]) => {
   console.log("ids", ids);
   const selectedId = ids[0];
-  selectedMkdItp.value = data.value.find((x) => x.id === selectedId);
-  console.log(
-    "data.value.find((x) => x.id === selectedId)",
-    data.value.find((x) => x.id === selectedId),
-  );
-  console.log("selectedMkdItp.value", selectedMkdItp.value);
+  if (!selectedId) {
+    return;
+  }
+  const cMkd = allMkd.value.find((x) => x.id === selectedId);
+  if (!cMkd) {
+    throw Error("ITP not found");
+  }
+  const response = await itpApi.getById(cMkd.itpId);
+  selectedMkdItp.value = { ...response, ...cMkd };
   isCardOpen.value = true;
 };
 
-const itpStore = useItpStore();
-const mkdStore = useMkdStore();
-const allItp = computed(() => itpStore.getAll());
+const allMkd = ref<MKDResponse[]>([]);
+const allItp = ref<ITPResponse[]>([]);
 const itpLoading = ref(false);
 const itpError = ref<string | null>(null);
 const totalItems = ref(0);
 const totalPages = ref(0);
-const data = computed(() =>
-  itpStore.getAll().map((x) => {
-    const mkd = mkdStore.getAll().find((y) => y.itpId === x.id);
-    return {
-      id: mkd?.id,
-      number: x.number,
-      address: mkd?.address,
-      unom: mkd?.unom,
-    };
-  }),
-);
 const isCardOpen = ref(false);
 const pageable = ref<Pageable>({
   page: 0,
@@ -116,23 +96,20 @@ const loadItpList = async () => {
     if (!fetchedPage.value.includes(pageable.value.page)) {
       fetchedPage.value.push(pageable.value.page);
     }
-    itpStore.addMany(response.content);
+    response.content.forEach((x) => allItp.value.push(x));
     totalPages.value = response.totalPages;
     totalItems.value = response.totalElements;
-    const mkdPromises = itpStore.getAll().map((itp) => {
-      const res = mkdStore.getByItpId(itp.id);
-      console.log("res", res);
-      if (!res) {
-        return mkdApi.getByItpId(itp.id).catch((err) => {
-          console.warn(`MKD для ITP ${itp.id} не найден`, err);
-          return null;
-        });
-      }
-      return res;
+    const mkdPromises = allItp.value.map((itp) => {
+      return mkdApi.getByItpId(itp.id).catch((err) => {
+        console.warn(`MKD для ITP ${itp.id} не найден`, err);
+        return null;
+      });
     });
 
     const mkdResults = await Promise.all(mkdPromises);
-    mkdStore.addMany(mkdResults.filter(Boolean) as MKDResponse[]);
+    (mkdResults.filter(Boolean) as MKDResponse[]).forEach((x) =>
+      allMkd.value.push(x),
+    );
   } catch (err) {
     console.error("Ошибка при загрузке ITP:", err);
     itpError.value = "Не удалось загрузить данные. Попробуйте позже.";
@@ -141,47 +118,7 @@ const loadItpList = async () => {
   }
 };
 
-const handlePageChange = (page: number) => {
-  console.log("handlePageChange", page);
-  if (page < 1 || page > totalPages.value) return;
-  pageable.value = { ...pageable.value, page: page - 1 };
-  loadItpList();
-};
-
 onMounted(() => {
   loadItpList();
 });
-
-// const loading = ref(false);
-// const error = ref<string | null>(null);
-// const mkdList = ref<MKDResponse[]>([]);
-// const pageable = ref<Pageable>({
-//   page: 0,
-//   size: 10,
-//   sort: ["id", "asc"],
-// });
-
-// const loadMkdList = async () => {
-//   loading.value = true;
-//   error.value = null;
-
-//   try {
-//     const response: PageMKDResponse = await mkdApi.getAll(pageable.value);
-//     mkdList.value = response.content;
-//     pageable.value = {
-//       ...pageable.value,
-//       page: response.number,
-//       hasNext: response.number < response.totalPages - 1,
-//     };
-//   } catch (err) {
-//     console.error("Ошибка при загрузке MKD:", err);
-//     error.value = "Не удалось загрузить данные. Попробуйте позже.";
-//   } finally {
-//     loading.value = false;
-//   }
-// };
-
-// onMounted(() => {
-//   loadMkdList();
-// });
 </script>

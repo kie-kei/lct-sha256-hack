@@ -12,7 +12,10 @@
       <CardContent class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div>
           <Label for="itp-select">ИТП</Label>
-          <Select v-model="selectedItpId">
+          <Select
+            :model-value="selectedItpId"
+            @update:model-value="(x) => handleSelectItp(x as string)"
+          >
             <SelectTrigger>
               <SelectValue placeholder="Выберите ИТП" />
             </SelectTrigger>
@@ -20,6 +23,25 @@
               <SelectGroup>
                 <SelectItem v-for="itp in itps" :key="itp.id" :value="itp.id">
                   {{ itp.number }}
+                </SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <Label for="itp-select">МКД</Label>
+          <Select
+            :model-value="selectedMkdId"
+            @update:model-value="(x) => handleSelectMkd(x as string)"
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Выберите МКД" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem v-for="mkd in mkds" :key="mkd.id" :value="mkd.id">
+                  {{ mkd.address }}
                 </SelectItem>
               </SelectGroup>
             </SelectContent>
@@ -165,27 +187,31 @@ import {
 
 import { itpApi } from "@/api/itp";
 import { statisticsApi } from "@/api/statistics";
-import type {
-  UUID,
-  TimeStep,
-  ITPResponse,
-  StatisticResponse,
+import {
+  type UUID,
+  type TimeStep,
+  type ITPResponse,
+  type StatisticResponse,
+  type MKDResponse,
 } from "@/api/types";
-import type { PageITPResponse } from "@/api/types";
+import type { PageITPResponse, PageMKDResponse } from "@/api/types";
 
 import FlowDifferenceChart from "@/components/charts/FlowDifferenceChart.vue";
 import GvsFlowChart from "@/components/charts/GvsFlowChart.vue";
 import HvsFlowChart from "@/components/charts/HvsFlowChart.vue";
 import CombinedFlowChart from "@/components/charts/CombinedFlowChart.vue";
+import { mkdApi } from "@/api/mkd";
 
 // Form state
 const selectedItpId = ref<UUID | null>(null);
+const selectedMkdId = ref<UUID | null>(null);
 const startDate = ref<string>("");
 const endDate = ref<string>("");
 const timeStep = ref<TimeStep>("DAY");
 
 // Data state
 const itps = ref<ITPResponse[]>([]);
+const mkds = ref<MKDResponse[]>([]);
 const statistics = ref<StatisticResponse | null>(null);
 const loading = ref(false);
 const error = ref<string | null>(null);
@@ -193,9 +219,36 @@ const error = ref<string | null>(null);
 // Validation
 const isFormValid = computed(() => {
   return (
-    selectedItpId.value && startDate.value && endDate.value && timeStep.value
+    (selectedItpId.value || selectedMkdId.value) &&
+    startDate.value &&
+    endDate.value &&
+    timeStep.value
   );
 });
+
+const handleSelectItp = (id: string) => {
+  selectedMkdId.value = null;
+  selectedItpId.value = id;
+};
+
+const handleSelectMkd = (id: string) => {
+  selectedItpId.value = null;
+  selectedMkdId.value = id;
+};
+
+const fetchMkds = async () => {
+  try {
+    loading.value = true;
+    const pageable = { page: 0, size: 100 };
+    const response: PageMKDResponse = await mkdApi.getAll(pageable);
+    mkds.value = response.content;
+  } catch (err) {
+    console.error("Error fetching MKDs:", err);
+    error.value = "Ошибка при загрузке ИТП";
+  } finally {
+    loading.value = false;
+  }
+};
 
 // Fetch ITPs
 const fetchItps = async () => {
@@ -216,15 +269,20 @@ const fetchItps = async () => {
 const fetchStatistics = async () => {
   if (!isFormValid.value) return;
 
+  if (selectedItpId.value === null && selectedMkdId.value === null) return;
   try {
     loading.value = true;
     error.value = null;
 
     const formattedStart = startDate.value.replace("T", " ");
     const formattedEnd = endDate.value.replace("T", " ");
-
+    const mkd = mkds.value.find((x) => selectedMkdId.value === x.id);
+    const idToFetch = mkd ? mkd.itpId : selectedItpId.value;
+    if (!idToFetch) {
+      throw new Error("Failed to fetch statistics. Can't get id");
+    }
     statistics.value = await statisticsApi.getByITP(
-      selectedItpId.value!,
+      idToFetch,
       formattedStart,
       formattedEnd,
       timeStep.value,
@@ -240,7 +298,7 @@ const fetchStatistics = async () => {
 // Initialize
 onMounted(async () => {
   await fetchItps();
-
+  await fetchMkds();
   // Set default dates to last week
   const now = new Date();
   const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);

@@ -96,12 +96,12 @@ const currentZoom = ref(zoom.value);
 const currentRotation = ref(rotation.value);
 const currentResolution = ref(0);
 
-function resolutionChanged(event) {
+function resolutionChanged(event: any) {
   currentResolution.value = event.target.getResolution();
   currentZoom.value = event.target.getZoom();
 }
 
-function centerChanged(event) {
+function centerChanged(event: any) {
   const center3857 = event.target.getCenter();
   const center4326: Coordinate = fromLonLat(center3857, "EPSG:3857");
   if (center4326[0] === undefined || center4326[1] === undefined) return;
@@ -111,7 +111,7 @@ function centerChanged(event) {
   ];
 }
 
-function rotationChanged(event) {
+function rotationChanged(event: any) {
   currentRotation.value = event.target.getRotation();
 }
 
@@ -137,10 +137,12 @@ const featureStyle = () => {
   ];
 };
 
-const overrideStyleFunction = (feature, style) => {
+const overrideStyleFunction = (feature: any, style: any) => {
   const clusteredFeatures = feature.get("features");
 
-  const hasDanger = clusteredFeatures.some((f) => f.get("danger") === true);
+  const hasDanger = clusteredFeatures.some(
+    (f: any) => f.get("danger") === true,
+  );
 
   const color = hasDanger ? "255,0,0" : "0,128,0";
   const radius = Math.max(8, Math.min(clusteredFeatures.length, 20));
@@ -154,11 +156,11 @@ const overrideStyleFunction = (feature, style) => {
   return style;
 };
 const emits = defineEmits(["selected"]);
-const featureSelected = (event) => {
+const featureSelected = (event: any) => {
   const allMkd = event.target.features_.array_;
-  const selected = allMkd.map((x) => {
+  const selected = allMkd.map((x: any) => {
     const clusteredFeatures = x.get("features");
-    return clusteredFeatures.find((f) => f.get("id")).values_.id;
+    return clusteredFeatures.find((f: any) => f.get("id")).values_.id;
   });
   console.log("selected", selected);
   emits("selected", selected);

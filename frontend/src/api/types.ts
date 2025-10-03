@@ -110,7 +110,7 @@ export interface MKDResponse {
 
 // --- ITP ---
 export interface ITPCreateRequest {
-  id: UUID;
+  id?: UUID;
   number: string;
   mkd?: MKDCreateRequest;
 }
