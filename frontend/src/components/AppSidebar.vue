@@ -1,7 +1,13 @@
 <script setup lang="ts">
 import type { SidebarProps } from "@/components/ui/sidebar";
 
-import { Building2, ChartAreaIcon, Map, Siren } from "lucide-vue-next";
+import {
+  BottleWine,
+  Building2,
+  ChartAreaIcon,
+  Map,
+  Siren,
+} from "lucide-vue-next";
 import NavMain from "@/components/NavMain.vue";
 // import NavUser from "@/components/NavUser.vue";
 
@@ -44,6 +50,11 @@ const data = {
       title: "Статистика",
       url: "/statistics",
       icon: ChartAreaIcon,
+    },
+    {
+      title: "Данные ГВС и ХВС",
+      url: "/water",
+      icon: BottleWine,
     },
   ],
 };

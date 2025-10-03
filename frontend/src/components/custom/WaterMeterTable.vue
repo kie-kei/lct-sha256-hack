@@ -18,10 +18,10 @@ const props = defineProps<{
     gvsConsumptionFlowValue?: number;
     waterMeterIdentifier?: UUID;
     hvsFlowValue?: number;
-    measurementTimestamp: string;
-    createdAt: string;
-    updatedAt: string;
-    number: string;
+    measurementTimestamp?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    number?: string;
   };
 }>();
 const pageable = defineModel<Pageable>({ required: true });

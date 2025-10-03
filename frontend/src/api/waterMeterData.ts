@@ -13,7 +13,28 @@ import type {
 const BASE_PATH = "/api/v1/water-meter-data";
 
 export const waterMeterDataApi = {
-  // CRUD
+  uploadWaterMeterData(
+    itpId: string,
+    gvsFile: File,
+    hvsFile: File,
+  ): Promise<WaterMeterDataResponse[]> {
+    const formData = new FormData();
+    formData.append("gvsData", gvsFile);
+    formData.append("hvsData", hvsFile);
+
+    return apiClient
+      .post<WaterMeterDataResponse[]>(
+        `${BASE_PATH}/upload/itp/${itpId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      )
+      .then((response) => response.data);
+  },
+
   create(data: WaterMeterDataCreateRequest): Promise<WaterMeterDataResponse> {
     return apiClient.post(BASE_PATH, data).then((res) => res.data);
   },

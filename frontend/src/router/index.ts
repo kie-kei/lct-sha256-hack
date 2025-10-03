@@ -57,6 +57,15 @@ const routes: RouteRecordRaw[] = [
           backPath: "/statistics",
         },
       },
+      {
+        path: "/water",
+        name: "water",
+        component: () => import("@/pages/WaterMetersPage.vue"),
+        meta: {
+          breadcrumb: "Данные ГВС и ХВС",
+          backPath: "/water",
+        },
+      },
     ],
   },
 ];

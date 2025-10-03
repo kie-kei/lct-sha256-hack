@@ -1,6 +1,11 @@
 <template>
   <div class="h-full flex flex-col relative">
-    <MkdMap class="flex-1" @selected="handlePointSelected" :mkd-list="allMkd" />
+    <MkdMap
+      class="flex-1"
+      @selected="handlePointSelected"
+      :mkd-list="allMkd"
+      :accident-list="itpAccident"
+    />
     <!-- <ItpTable
       :itp="allItp"
       :pageable="pageable"
@@ -42,6 +47,7 @@ import { itpApi } from "@/api/itp";
 import { mkdApi } from "@/api/mkd";
 import { X } from "lucide-vue-next";
 import {
+  type AccidentResponse,
   type ITPResponse,
   type MKDResponse,
   type Pageable,
@@ -52,6 +58,7 @@ import MkdMap from "@/components/custom/MkdMap.vue";
 import { onMounted } from "vue";
 import { ref } from "vue";
 import { Button } from "@/components/ui/button";
+import { accidentApi } from "@/api/accident";
 
 const selectedMkdItp = ref<{
   number: string | undefined;
@@ -76,6 +83,29 @@ const handlePointSelected = async (ids: string[]) => {
 
 const allMkd = ref<MKDResponse[]>([]);
 const allItp = ref<ITPResponse[]>([]);
+const itpAccident = ref<Record<string, AccidentResponse[]>>({});
+
+const loadAccident = async () => {
+  const accidentPromises = allItp.value.map((x) =>
+    accidentApi.getByItpId(x.id),
+  );
+
+  try {
+    const accidentResults = await Promise.all(accidentPromises);
+
+    for (let i = 0; i < allItp.value.length; i++) {
+      const val = allItp.value[i];
+      if (!val) return;
+      const itpId = val.id;
+      const accidents = accidentResults[i];
+      if (!accidents) return;
+      itpAccident.value[itpId] = accidents;
+    }
+  } catch (error) {
+    console.error("Ошибка загрузки аварий:", error);
+  }
+};
+
 const itpLoading = ref(false);
 const itpError = ref<string | null>(null);
 const totalItems = ref(0);
@@ -92,7 +122,7 @@ const loadItpList = async () => {
   itpError.value = null;
 
   try {
-    const response: PageITPResponse = await itpApi.getAll(pageable.value);
+    const response: PageITPResponse = await itpApi.getAll();
     if (!fetchedPage.value.includes(pageable.value.page)) {
       fetchedPage.value.push(pageable.value.page);
     }
@@ -118,7 +148,8 @@ const loadItpList = async () => {
   }
 };
 
-onMounted(() => {
-  loadItpList();
+onMounted(async () => {
+  await loadItpList();
+  await loadAccident();
 });
 </script>

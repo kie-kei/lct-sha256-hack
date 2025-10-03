@@ -62,12 +62,15 @@ import { fromLonLat, transformExtent } from "ol/proj";
 import "ol/ol.css";
 import { ref } from "vue";
 
-const { mkdList } = defineProps<{ mkdList: MKDResponse[] }>();
+const { mkdList, accidentList } = defineProps<{
+  mkdList: MKDResponse[];
+  accidentList: Record<string, AccidentResponse[]>;
+}>();
 
 import { Circle, Fill, Stroke, Style } from "ol/style";
 import markerIcon from "@/assets/apartment-building.png";
 import { computed } from "vue";
-import type { MKDResponse } from "@/api/types";
+import type { AccidentResponse, MKDResponse } from "@/api/types";
 import type { Coordinate } from "ol/coordinate";
 const moscowBounds4326 = [37.3, 55.5, 37.9, 55.9];
 const moscowExtent = transformExtent(
@@ -78,8 +81,9 @@ const moscowExtent = transformExtent(
 
 const coordinates = computed(() =>
   mkdList.map((x) => {
+    const dangerLevel = getDangerLevel(accidentList[x.itpId]);
     return {
-      danger: true,
+      danger: dangerLevel, // теперь это 'LOW', 'MEDIUM', 'HIGH' или 'CRITICAL'
       cord: fromLonLat([x.longitude, x.latitude]),
       id: x.id,
     };
@@ -137,21 +141,53 @@ const featureStyle = () => {
   ];
 };
 
+// const overrideStyleFunction = (feature: any, style: any) => {
+//   const clusteredFeatures = feature.get("features");
+
+//   const hasDanger = clusteredFeatures.some(
+//     (f: any) => f.get("danger") === true,
+//   );
+//   // 58, 235, 52 LOW
+//   // 235, 198, 52 MEDIUM
+//   // 235, 137, 52 HIGH
+//   // 255,0,0 CRITICAL
+//   const color = hasDanger ? "255,0,0" : "0,128,0";
+//   const radius = Math.max(8, Math.min(clusteredFeatures.length, 20));
+
+//   style.getImage().getStroke().setColor(`rgba(${color}, 0.5)`);
+//   style.getImage().getFill().setColor(`rgba(${color}, 1)`);
+
+//   style.getText().setText(clusteredFeatures.length.toString());
+//   style.getImage().setRadius(radius);
+
+//   return style;
+// }
 const overrideStyleFunction = (feature: any, style: any) => {
   const clusteredFeatures = feature.get("features");
+  if (!clusteredFeatures || clusteredFeatures.length === 0) return style;
 
-  const hasDanger = clusteredFeatures.some(
-    (f: any) => f.get("danger") === true,
-  );
+  // Находим максимальный уровень опасности в кластере
+  let maxDanger = "LOW";
+  for (const f of clusteredFeatures) {
+    const danger = f.get("danger");
+    if (DANGER_PRIORITY[danger] > DANGER_PRIORITY[maxDanger]) {
+      maxDanger = danger;
+    }
+  }
 
-  const color = hasDanger ? "255,0,0" : "0,128,0";
-  const radius = Math.max(8, Math.min(clusteredFeatures.length, 20));
+  const color = DANGER_COLORS[maxDanger];
+  const radius = Math.max(10, Math.min(clusteredFeatures.length * 2, 30)); // адаптивный радиус
 
-  style.getImage().getStroke().setColor(`rgba(${color}, 0.5)`);
-  style.getImage().getFill().setColor(`rgba(${color}, 1)`);
+  // Обновляем стиль
+  const image = style.getImage();
+  image.getStroke().setColor(`rgba(${color}, 0.7)`);
+  image.getFill().setColor(`rgba(${color}, 1)`);
+  image.setRadius(radius);
 
+  // Текст — количество точек
   style.getText().setText(clusteredFeatures.length.toString());
-  style.getImage().setRadius(radius);
+  style.getText().getFill().setColor("white");
+  style.getText().setFont("12px sans-serif");
 
   return style;
 };
@@ -165,4 +201,38 @@ const featureSelected = (event: any) => {
   console.log("selected", selected);
   emits("selected", selected);
 };
+
+const DANGER_PRIORITY: Record<string, number> = {
+  LOW: 0,
+  MEDIUM: 1,
+  HIGH: 2,
+  CRITICAL: 3,
+};
+
+const DANGER_COLORS: Record<string, string> = {
+  LOW: "58,235,52", // зелёный
+  MEDIUM: "235,198,52", // жёлтый
+  HIGH: "235,137,52", // оранжевый
+  CRITICAL: "255,0,0", // красный
+};
+
+// function getDangerLevel(accidents: AccidentResponse[] | undefined): string {
+//   const arr = ["LOW", "MEDIUM", "HIGH", "CRITICAL"];
+//   const i = Math.floor(Math.random() * 4);
+//   console.log("arr[i]!", arr[i]!);
+//   return arr[i]!;
+// }
+
+function getDangerLevel(
+  accidents: AccidentResponse[] | undefined,
+): "LOW" | "MEDIUM" | "HIGH" | "CRITICAL" {
+  if (!accidents || accidents.length === 0) return "LOW";
+
+  // Если есть хотя бы одна CRITICAL — возвращаем CRITICAL
+  if (accidents.some((a) => a.probabilityType === "CRITICAL"))
+    return "CRITICAL";
+  if (accidents.some((a) => a.probabilityType === "HIGH")) return "HIGH";
+  if (accidents.some((a) => a.probabilityType === "MEDIUM")) return "MEDIUM";
+  return "LOW";
+}
 </script>
